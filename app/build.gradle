@@ -1,0 +1,225 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+/*apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'*/
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
+apply from: '../buildsystem/quality/quality.gradle'
+apply from: '../buildsystem/quality/ktlint.gradle'
+
+/*
+
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+*/
+
+
+android {
+    compileSdkVersion rootProject.ext.androidVersions.compileSdkVersion
+    testOptions.unitTests.includeAndroidResources = true
+
+    defaultConfig {
+        applicationId "com.feelsokman.androidtemplate"
+        minSdkVersion rootProject.ext.androidVersions.minSdkVersion
+        targetSdkVersion rootProject.ext.androidVersions.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "serverUrl", '"https://api.betterttv.net/"'
+    }
+    signingConfigs {
+        release {
+            /*keyAlias keystoreProperties['releaseKeyAlias']
+            keyPassword keystoreProperties['releaseKeyPassword']
+            storeFile rootProject.file("keystore.jks")
+            storePassword keystoreProperties['releaseStorePassword']*/
+        }
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources false
+            //signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".release"
+            versionNameSuffix "-release"
+
+
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
+    }
+
+    flavorDimensions "style", "monetize"
+    productFlavors {
+        templateStyle {
+            dimension "style"
+            applicationIdSuffix ".templateStyle"
+            versionNameSuffix "-templateStyle"
+            resValue "string", "app_name", "Android Template"
+            versionCode 1
+            versionName "0.1"
+        }
+
+        free {
+            dimension "monetize"
+            applicationIdSuffix ".free"
+            versionNameSuffix "-free"
+        }
+
+        premium {
+            dimension "monetize"
+            applicationIdSuffix ".premium"
+            versionNameSuffix "-premium"
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            unitTests.returnDefaultValues = true
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/ASL2.0'
+    }
+}
+
+dependencies {
+    implementation project(':analytics')
+    implementation project(':net')
+    implementation project(':database')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Basic Google components
+    implementation rootProject.ext.dependencies.appCompatX
+    implementation rootProject.ext.dependencies.design
+    implementation rootProject.ext.dependencies.cardViewX
+    implementation rootProject.ext.dependencies.constraintLayoutX
+    implementation rootProject.ext.dependencies.recyclerviewX
+    implementation rootProject.ext.dependencies.annotation
+    implementation rootProject.ext.dependencies.fragmentKtx
+
+    // Lifecycle
+    implementation rootProject.ext.dependencies.lifecycle
+    implementation rootProject.ext.dependencies.viewmodelKtx
+
+    // General Ktx
+    implementation rootProject.ext.dependencies.coreKtx
+    implementation rootProject.ext.dependencies.collectionsKtx
+
+    // CoRoutines
+    implementation rootProject.ext.dependencies.coroutinesCore
+    implementation rootProject.ext.dependencies.coroutinesAndroid
+
+    //Navigation
+    implementation rootProject.ext.dependencies.navigationFragments
+    implementation rootProject.ext.dependencies.navigationUI
+
+    // Rx
+    implementation rootProject.ext.dependencies.rxJava2
+    implementation rootProject.ext.dependencies.rxAndroid
+    //noinspection GradleDependency
+    implementation rootProject.ext.dependencies.rxPermissions
+    implementation rootProject.ext.dependencies.rxBindingMaterial
+
+    // Dependency Injection
+    implementation rootProject.ext.dependencies.dagger
+    kapt rootProject.ext.dependencies.daggerCompiler
+    implementation rootProject.ext.dependencies.daggerAndroid
+    implementation rootProject.ext.dependencies.daggerAndroidSupport
+    kapt rootProject.ext.dependencies.daggerProcessor
+
+    // Logging
+    implementation rootProject.ext.dependencies.timberLogger
+
+    // UI stuff
+    //noinspection GradleDependency
+    implementation rootProject.ext.dependencies.toast
+    implementation rootProject.ext.dependencies.lovelydialog
+    implementation rootProject.ext.dependencies.flashbar
+    implementation rootProject.ext.dependencies.materialEditText
+    implementation rootProject.ext.dependencies.shimmer
+
+    // Gif
+    implementation rootProject.ext.dependencies.gif
+
+    // Animations
+    implementation rootProject.ext.dependencies.animations1
+    implementation rootProject.ext.dependencies.animations2
+    implementation rootProject.ext.dependencies.animations3
+
+    // Otto
+    implementation rootProject.ext.dependencies.otto
+
+    // Leak detection
+    debugImplementation rootProject.ext.dependencies.leakCanary
+
+    // Firebase performance
+    implementation rootProject.ext.dependencies.firebasePerformance
+    // Crashlytics
+    implementation rootProject.ext.dependencies.crashlytics
+
+    // testing (avoid androidTestImplementation if you can!)
+    testImplementation rootProject.ext.testDependencies.jUnit
+    testImplementation rootProject.ext.testDependencies.jUnitKotlin
+    implementation rootProject.ext.testDependencies.testCoreX
+    testImplementation rootProject.ext.testDependencies.testArchCompX
+    testImplementation rootProject.ext.testDependencies.robolectric
+    testImplementation rootProject.ext.testDependencies.mockitoCore
+    testImplementation rootProject.ext.testDependencies.mockitoKotlin
+    testImplementation rootProject.ext.testDependencies.mockitoInline
+    testImplementation rootProject.ext.testDependencies.runner
+    testImplementation rootProject.ext.testDependencies.espresso
+    testImplementation rootProject.ext.testDependencies.espressoIntents
+    testImplementation rootProject.ext.testDependencies.rules
+    testImplementation rootProject.ext.testDependencies.truth
+    testImplementation rootProject.ext.testDependencies.kluent
+
+    androidTestImplementation rootProject.ext.testDependencies.jUnit
+    androidTestImplementation rootProject.ext.testDependencies.jUnitKotlin
+    androidTestImplementation rootProject.ext.testDependencies.testCoreX
+    androidTestImplementation rootProject.ext.testDependencies.runner
+    androidTestImplementation rootProject.ext.testDependencies.espresso
+    androidTestImplementation rootProject.ext.testDependencies.kakaoUiTesting
+
+
+    debugImplementation rootProject.ext.testDependencies.fragmentScenario
+
+}
+//apply plugin: 'com.google.gms.google-services'

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/hostFragment">
+
+    <fragment
+        android:id="@+id/hostFragment"
+        android:name="com.feelsokman.androidtemplate.ui.fragments.host.HostFragment"
+        android:label="HostFragment">
+        <action
+            android:id="@+id/action_hostFragment_to_anotherFragment"
+            app:destination="@id/anotherFragment"
+            app:enterAnim="@anim/enter_from_left"
+            app:exitAnim="@anim/exit_to_right"
+            app:popEnterAnim="@anim/enter_from_left"
+            app:popExitAnim="@anim/exit_to_right">
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/anotherFragment"
+        android:name="com.feelsokman.androidtemplate.ui.fragments.another.AnotherFragment"
+        android:label="AnotherFragment">
+        <argument
+            android:name="extra_another_fragment"
+            app:argType="string"
+            android:defaultValue="extra.another" />
+
+    </fragment>
+    <action
+        android:id="@+id/action_global_anotherFragment"
+        app:destination="@id/anotherFragment"
+        app:enterAnim="@anim/enter_from_left"
+        app:exitAnim="@anim/exit_to_right"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
+        app:popUpTo="@+id/anotherFragment"
+        app:popUpToInclusive="true">
+    </action>
+</navigation>

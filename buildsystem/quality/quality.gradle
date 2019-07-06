@@ -1,0 +1,92 @@
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+
+def checkStyleBlowOnError = false
+def findBugsBlowOnError = false // TODO find bugs is deprecated. find something else to use
+def lintBlowOnError = true
+def lintBlowOnWarning = false
+def pmdBlowOnError = false
+
+ext {
+    qualityFolder = "${project.rootDir}/buildsystem/quality/"
+    reportsFolder = "${project.buildDir}/reports/"
+}
+
+def staticAnalysisSource = 'src'
+def staticAnalysisExcludeFiles = [
+        '**/R.java',
+        '**/buildSrc/**',
+        '**/app/build.gradle/**',
+        '**/BuildConfig.java/**',
+        '**/gen/**',
+        '**/*.kt',
+        '**/*.json',
+        '**/AndroidManifest.xml',
+        '**/*.kt',
+        '**/java-gen/**',
+        '**/androidTest/**',
+        '**/tests/**',
+        '**/test/**',
+        '**/apt/**',
+        '**/res/**',
+        '**/mipmap/**',
+        '**/build/**',
+        '**/assets/**'
+]
+
+task checkstyle(type: Checkstyle) {
+    description 'Run checkstyle'
+    ignoreFailures !checkStyleBlowOnError
+
+    configFile file("${qualityFolder}checkstyle-rules.xml")
+    configProperties.checkstyleSuppressionsPath = file("${qualityFolder}checkstyle-suppressions.xml").absolutePath
+    source staticAnalysisSource
+    exclude staticAnalysisExcludeFiles
+    classpath = files()
+}
+
+android {
+    lintOptions {
+        abortOnError lintBlowOnError
+        warningsAsErrors lintBlowOnWarning
+        //htmlOutput file("${reportsFolder}lint/lint.html")
+        //baseline file("lint-baseline.xml")
+        //htmlReport true
+    }
+}
+
+task pmd(type: Pmd) {
+    description 'Run pmd'
+    ignoreFailures = !pmdBlowOnError
+
+    ruleSetFiles = files("${qualityFolder}pmd-rules.xml")
+    ruleSets = []
+
+    source staticAnalysisSource
+    exclude staticAnalysisExcludeFiles
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+        xml {
+            destination new File("${reportsFolder}pmd/pmd.xml")
+        }
+        html {
+            destination new File("${reportsFolder}pmd/pmd.html")
+        }
+    }
+}
+
+task static_analysis(type: GradleBuild) {
+    description 'Helper task to run all static analysis tasks'
+    tasks = [
+            'assembleDebug', // required for findbugs
+            'pmd',
+            'checkstyle',
+            'ktlint',
+            'lintDebug']
+
+    doLast {
+        println "---- FINISHED STATIC ANALYSIS ----"
+    }
+}
