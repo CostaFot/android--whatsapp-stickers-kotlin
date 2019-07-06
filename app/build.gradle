@@ -28,7 +28,7 @@ android {
     testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
-        applicationId "com.feelsokman.androidtemplate"
+        applicationId "com.feelsokman.stickers"
         minSdkVersion rootProject.ext.androidVersions.minSdkVersion
         targetSdkVersion rootProject.ext.androidVersions.targetSdkVersion
         versionCode 1
@@ -38,6 +38,7 @@ android {
 
         buildConfigField "String", "serverUrl", '"https://api.betterttv.net/"'
     }
+
     signingConfigs {
         release {
             /*keyAlias keystoreProperties['releaseKeyAlias']
@@ -69,11 +70,11 @@ android {
 
     flavorDimensions "style", "monetize"
     productFlavors {
-        templateStyle {
+        meme {
             dimension "style"
-            applicationIdSuffix ".templateStyle"
-            versionNameSuffix "-templateStyle"
-            resValue "string", "app_name", "Android Template"
+            applicationIdSuffix ".meme"
+            versionNameSuffix "-meme"
+            resValue "string", "app_name", "Stickers"
             versionCode 1
             versionName "0.1"
         }
@@ -83,12 +84,10 @@ android {
             applicationIdSuffix ".free"
             versionNameSuffix "-free"
         }
+    }
 
-        premium {
-            dimension "monetize"
-            applicationIdSuffix ".premium"
-            versionNameSuffix "-premium"
-        }
+    applicationVariants.all { variant ->
+        variant.resValue  "string", "content_provider_authority", variant.applicationId + ".stickercontentprovider"
     }
 
 
@@ -117,6 +116,8 @@ android {
         exclude 'META-INF/rxjava.properties'
         exclude 'META-INF/ASL2.0'
     }
+
+
 }
 
 dependencies {
