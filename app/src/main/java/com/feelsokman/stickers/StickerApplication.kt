@@ -3,6 +3,7 @@ package com.feelsokman.stickers
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.feelsokman.stickers.di.component.AppComponent
 import com.feelsokman.stickers.di.component.DaggerAppComponent
 import dagger.android.AndroidInjector
@@ -27,6 +28,7 @@ class StickerApplication : DaggerApplication() {
         Timber.e("onCreate")
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         initToasty()
+        Fresco.initialize(this)
     }
 
     private fun initToasty() {
