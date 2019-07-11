@@ -1,4 +1,4 @@
-package com.feelsokman.domain.error
+package com.feelsokman.net.domain.error
 
 enum class DataSourceErrorKind {
     COMMUNICATION,

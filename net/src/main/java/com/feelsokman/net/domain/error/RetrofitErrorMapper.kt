@@ -1,6 +1,5 @@
 package com.feelsokman.net.domain.error
 
-import com.feelsokman.domain.error.DataSourceErrorKind
 import com.feelsokman.net.net.error.RestError
 import com.feelsokman.net.net.error.RestErrorBody
 import com.feelsokman.net.net.error.RetrofitException

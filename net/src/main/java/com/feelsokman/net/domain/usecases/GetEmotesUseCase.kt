@@ -1,7 +1,7 @@
 package com.feelsokman.net.domain.usecases
 
-import com.feelsokman.domain.error.DataSourceErrorKind
 import com.feelsokman.net.domain.error.DataSourceError
+import com.feelsokman.net.domain.error.DataSourceErrorKind
 import com.feelsokman.net.domain.error.RetrofitErrorMapper
 import com.feelsokman.net.net.EmoteApi
 import com.feelsokman.net.net.model.NetResponseEmote

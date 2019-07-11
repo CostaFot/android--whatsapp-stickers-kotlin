@@ -3,8 +3,8 @@ package com.feelsokman.stickers.usecase
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.database.Cursor
-import com.feelsokman.domain.error.DataSourceErrorKind
 import com.feelsokman.net.domain.error.DataSourceError
+import com.feelsokman.net.domain.error.DataSourceErrorKind
 import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
 import com.feelsokman.stickers.contentprovider.ANDROID_APP_DOWNLOAD_LINK_IN_QUERY
 import com.feelsokman.stickers.contentprovider.IOS_APP_DOWNLOAD_LINK_IN_QUERY
