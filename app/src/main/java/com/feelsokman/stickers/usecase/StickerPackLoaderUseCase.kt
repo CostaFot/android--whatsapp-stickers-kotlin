@@ -2,16 +2,14 @@ package com.feelsokman.stickers.usecase
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
-import android.content.Context
 import android.database.Cursor
 import androidx.annotation.NonNull
 import com.feelsokman.domain.error.DataSourceErrorKind
 import com.feelsokman.net.domain.error.DataSourceError
 import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
-import com.feelsokman.stickers.R
 import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.ANDROID_APP_DOWNLOAD_LINK_IN_QUERY
 import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.IOS_APP_DOWNLOAD_LINK_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.LICENSE_AGREENMENT_WEBSITE
+import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.LICENSE_AGREEMENT_WEBSITE
 import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.PRIVACY_POLICY_WEBSITE
 import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.PUBLISHER_EMAIL
 import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.PUBLISHER_WEBSITE
@@ -36,11 +34,11 @@ import java.util.HashSet
 
 class StickerPackLoaderUseCase(
     private val scheduler: Scheduler,
-    private val applicationContext: Context,
+    private val contentResolver: ContentResolver,
+    private val providerAuthority: String,
     private val uriResolverUseCase: UriResolverUseCase,
     private val stickerPackValidator: StickerPackValidator
-) :
-    BaseDisposableUseCase() {
+) : BaseDisposableUseCase() {
 
     override val compositeDisposable: CompositeDisposable = CompositeDisposable()
     override var latestDisposable: Disposable? = null
@@ -48,7 +46,7 @@ class StickerPackLoaderUseCase(
     fun loadStickerPacks(callback: Callback<ArrayList<StickerPack>>) {
         latestDisposable?.dispose()
         latestDisposable =
-            Single.fromCallable { fetchStickerPacks(applicationContext) }
+            Single.fromCallable { fetchStickerPacks() }
                 .subscribeOn(scheduler)
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -60,9 +58,9 @@ class StickerPackLoaderUseCase(
 
     @SuppressLint("Recycle")
     @Throws(IllegalStateException::class)
-    private fun fetchStickerPacks(context: Context): ArrayList<StickerPack> {
-        val cursor = context.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)
-            ?: throw IllegalStateException("could not fetch from content provider, " + context.getString(R.string.content_provider_authority))
+    private fun fetchStickerPacks(): ArrayList<StickerPack> {
+        val cursor = contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)
+            ?: throw IllegalStateException("could not fetch from content provider $providerAuthority")
         val identifierSet = HashSet<String>()
         val stickerPackList = fetchFromContentProvider(cursor)
         for (stickerPack in stickerPackList) {
@@ -76,7 +74,7 @@ class StickerPackLoaderUseCase(
             throw IllegalStateException("There should be at least one sticker pack in the app")
         }
         for (stickerPack in stickerPackList) {
-            val stickers = getStickersForPack(context, stickerPack)
+            val stickers = getStickersForPack(stickerPack)
             stickerPack.resetStickers(stickers)
             stickerPackValidator.verifyStickerPackValidity(stickerPack)
         }
@@ -84,22 +82,22 @@ class StickerPackLoaderUseCase(
     }
 
     @NonNull
-    private fun getStickersForPack(context: Context, stickerPack: StickerPack): List<Sticker> {
-        val stickers = fetchFromContentProviderForStickers(stickerPack.identifier!!, context.contentResolver)
+    private fun getStickersForPack(stickerPack: StickerPack): List<Sticker> {
+        val stickers = fetchFromContentProviderForStickers(stickerPack.identifier!!, contentResolver)
         for (sticker in stickers) {
             val bytes: ByteArray
             try {
-                bytes = fetchStickerAsset(stickerPack.identifier!!, sticker.imageFileName!!, context.contentResolver)
+                bytes = fetchStickerAsset(stickerPack.identifier!!, sticker.imageFileName!!, contentResolver)
                 if (bytes.isEmpty()) {
                     throw IllegalStateException("Asset file is empty, pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName)
                 }
                 sticker.size = bytes.size.toLong()
-            } catch (e: IOException) {
+            } catch (e: Throwable) {
                 throw IllegalStateException(
                     "Asset file doesn't exist. pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName,
                     e
                 )
-            } catch (e: IllegalArgumentException) {
+            } catch (e: Throwable) {
                 throw IllegalStateException(
                     "Asset file doesn't exist. pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName,
                     e
@@ -123,7 +121,7 @@ class StickerPackLoaderUseCase(
             val publisherEmail = cursor.getString(cursor.getColumnIndexOrThrow(PUBLISHER_EMAIL))
             val publisherWebsite = cursor.getString(cursor.getColumnIndexOrThrow(PUBLISHER_WEBSITE))
             val privacyPolicyWebsite = cursor.getString(cursor.getColumnIndexOrThrow(PRIVACY_POLICY_WEBSITE))
-            val licenseAgreementWebsite = cursor.getString(cursor.getColumnIndexOrThrow(LICENSE_AGREENMENT_WEBSITE))
+            val licenseAgreementWebsite = cursor.getString(cursor.getColumnIndexOrThrow(LICENSE_AGREEMENT_WEBSITE))
             val stickerPack = StickerPack(
                 identifier,
                 name,

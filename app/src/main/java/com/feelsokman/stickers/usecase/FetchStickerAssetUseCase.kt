@@ -1,24 +1,33 @@
 package com.feelsokman.stickers.usecase
 
-import android.content.Context
+import android.content.ContentResolver
 import java.io.ByteArrayOutputStream
-import java.io.IOException
+import java.io.InputStream
 
-class FetchStickerAssetUseCase(private val context: Context, private val uriResolverUseCase: UriResolverUseCase) {
+class FetchStickerAssetUseCase(private val contentResolver: ContentResolver, private val uriResolverUseCase: UriResolverUseCase) {
 
-    @Throws(IOException::class)
     fun fetchStickerAsset(identifier: String, name: String): ByteArray {
-        context.contentResolver.openInputStream(uriResolverUseCase.getStickerAssetUri(identifier, name))!!.use { inputStream ->
-            ByteArrayOutputStream().use { buffer ->
-                val bytes = ByteArray(16384)
-
-                buffer.write(bytes, 0, inputStream.read(bytes))
-
-                /*while ((read = inputStream.read(data, 0, data.size)) != -1) {
-                    buffer.write(data, 0, read)
-                }*/
-                return buffer.toByteArray()
-            }
+        val inputStream: InputStream?
+        try {
+            inputStream = contentResolver.openInputStream(uriResolverUseCase.getStickerAssetUri(identifier, name))
+        } catch (t: Throwable) {
+            throw Exception("Could not open input stream for identifier $identifier, name $name")
         }
+
+        val outputStream = ByteArrayOutputStream()
+
+        try {
+            inputStream.use {
+                val bytes = ByteArray(it.available())
+                outputStream.write(bytes, 0, it.read(bytes))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            inputStream.close()
+            outputStream.close()
+        }
+
+        return outputStream.toByteArray()
     }
 }

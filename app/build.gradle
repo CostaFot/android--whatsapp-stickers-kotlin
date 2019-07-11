@@ -24,6 +24,10 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 
 android {
+    //the compression of webp file during build causes problem with FileDescriptor in ContentProvider.
+    aaptOptions {
+        noCompress "webp"
+    }
     compileSdkVersion rootProject.ext.androidVersions.compileSdkVersion
     testOptions.unitTests.includeAndroidResources = true
 
@@ -68,26 +72,20 @@ android {
         }
     }
 
-    flavorDimensions "style", "monetize"
+    flavorDimensions "style"
     productFlavors {
-        meme {
+        kotlinized {
             dimension "style"
-            applicationIdSuffix ".meme"
-            versionNameSuffix "-meme"
+            applicationIdSuffix ".kotlinized"
+            versionNameSuffix "-kotlinized"
             resValue "string", "app_name", "Stickers"
             versionCode 1
             versionName "0.1"
         }
-
-        free {
-            dimension "monetize"
-            applicationIdSuffix ".free"
-            versionNameSuffix "-free"
-        }
     }
 
     applicationVariants.all { variant ->
-        variant.resValue  "string", "content_provider_authority", variant.applicationId + ".stickercontentprovider"
+        variant.resValue "string", "content_provider_authority", variant.applicationId + ".stickercontentprovider"
     }
 
 
@@ -115,6 +113,8 @@ android {
         exclude 'META-INF/MANIFEST.MF'
         exclude 'META-INF/rxjava.properties'
         exclude 'META-INF/ASL2.0'
+        exclude 'lib/*/libnative-imagetranscoder.so'
+        exclude 'lib/*/libnative-filters.so'
     }
 
 
@@ -222,12 +222,12 @@ dependencies {
 
     debugImplementation rootProject.ext.testDependencies.fragmentScenario
 
+    implementation 'com.facebook.fresco:fresco:2.0.0'
 
-
-    implementation 'com.facebook.fresco:fresco:1.13.0'
-    implementation 'com.facebook.fresco:webpsupport:1.13.0'
-    implementation 'com.facebook.fresco:animated-webp:1.13.0'
-    implementation 'com.facebook.fresco:animated-base:1.13.0'
+    // For WebP support, including animated WebP
+    implementation 'com.facebook.fresco:animated-webp:2.0.0'
+    implementation 'com.facebook.fresco:webpsupport:2.0.0'
+    implementation 'com.facebook.fresco:animated-base:2.0.0'
 
 }
 //apply plugin: 'com.google.gms.google-services'

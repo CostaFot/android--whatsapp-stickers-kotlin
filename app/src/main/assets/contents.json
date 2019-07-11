@@ -13,11 +13,7 @@
       "license_agreement_website": "",
       "stickers": [
         {
-          "image_file": "01_Cuppy_smile.webp",
-          "emojis": [
-            "☕",
-            "🙂"
-          ]
+          "image_file": "01_Cuppy_smile.webp"
         },
         {
           "image_file": "02_Cuppy_lol.webp",
@@ -80,6 +76,13 @@
           "emojis": [
             "🤔",
             "😐"
+          ]
+        },
+        {
+          "image_file": "11_Cuppy_upset.webp",
+          "emojis": [
+            "😱",
+            "😵"
           ]
         },
         {

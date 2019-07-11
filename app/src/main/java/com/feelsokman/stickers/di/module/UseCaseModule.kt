@@ -1,6 +1,6 @@
 package com.feelsokman.stickers.di.module
 
-import android.content.Context
+import android.content.ContentResolver
 import com.feelsokman.stickers.contentprovider.utils.StickerPackValidator
 import com.feelsokman.stickers.usecase.FetchStickerAssetUseCase
 import com.feelsokman.stickers.usecase.GetStringFromStorageUseCase
@@ -10,6 +10,7 @@ import com.feelsokman.storage.Storage
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
+import javax.inject.Named
 
 @Module
 class UseCaseModule {
@@ -27,17 +28,20 @@ class UseCaseModule {
     @Provides
     internal fun providesStickerPackLoaderUseCase(
         scheduler: Scheduler,
-        context: Context,
+        contentResolver: ContentResolver,
+        @Named(AppModule.CONTENT_PROVIDER_AUTHORITY) providerAuthority: String,
         uriResolverUseCase: UriResolverUseCase,
         stickerPackValidator: StickerPackValidator
-    ): StickerPackLoaderUseCase = StickerPackLoaderUseCase(scheduler, context, uriResolverUseCase, stickerPackValidator)
+    ): StickerPackLoaderUseCase =
+        StickerPackLoaderUseCase(scheduler, contentResolver, providerAuthority, uriResolverUseCase, stickerPackValidator)
 
     @Provides
-    internal fun providesUriResolverUseCase(context: Context): UriResolverUseCase = UriResolverUseCase(context.resources)
+    internal fun providesUriResolverUseCase(@Named(AppModule.CONTENT_PROVIDER_AUTHORITY) providerAuthority: String): UriResolverUseCase =
+        UriResolverUseCase(providerAuthority)
 
     @Provides
     internal fun providesFetchStickerAssetUseCase(
-        context: Context,
+        contentResolver: ContentResolver,
         uriResolverUseCase: UriResolverUseCase
-    ): FetchStickerAssetUseCase = FetchStickerAssetUseCase(context, uriResolverUseCase)
+    ): FetchStickerAssetUseCase = FetchStickerAssetUseCase(contentResolver, uriResolverUseCase)
 }

@@ -23,8 +23,8 @@ class ContentFileParser {
 
     @NonNull
     @Throws(IOException::class, IllegalStateException::class)
-    private fun readStickerPacks(@NonNull reader: JsonReader): List<StickerPack> {
-        val stickerPackList = java.util.ArrayList<StickerPack>()
+    private fun readStickerPacks(reader: JsonReader): List<StickerPack> {
+        val stickerPackList = ArrayList<StickerPack>()
         var androidPlayStoreLink: String? = null
         var iosAppStoreLink: String? = null
         reader.beginObject()
@@ -56,7 +56,7 @@ class ContentFileParser {
 
     @NonNull
     @Throws(IOException::class, IllegalStateException::class)
-    private fun readStickerPack(@NonNull reader: JsonReader): StickerPack {
+    private fun readStickerPack(reader: JsonReader): StickerPack {
         reader.beginObject()
         var identifier: String? = null
         var name: String? = null
@@ -116,7 +116,7 @@ class ContentFileParser {
 
     @NonNull
     @Throws(IOException::class, IllegalStateException::class)
-    private fun readStickers(@NonNull reader: JsonReader): List<Sticker> {
+    private fun readStickers(reader: JsonReader): List<Sticker> {
         reader.beginArray()
         val stickerList = java.util.ArrayList<Sticker>()
 
