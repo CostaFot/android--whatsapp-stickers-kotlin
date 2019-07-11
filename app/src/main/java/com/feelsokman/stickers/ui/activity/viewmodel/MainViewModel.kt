@@ -2,12 +2,10 @@ package com.feelsokman.stickers.ui.activity.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.feelsokman.stickers.usecase.GetStringFromStorageUseCase
 import timber.log.Timber
 import java.util.UUID
 
-class MainViewModel(private val getStringFromStorageUseCase: GetStringFromStorageUseCase) :
-    ViewModel() {
+class MainViewModel : ViewModel() {
 
     val textData = MutableLiveData<String>().apply { postValue(UUID.randomUUID().toString()) }
 

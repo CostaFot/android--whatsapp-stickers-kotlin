@@ -1,4 +1,4 @@
-package com.feelsokman.stickers.contentprovider.utils
+package com.feelsokman.stickers.usecase
 
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -7,7 +7,6 @@ import android.webkit.URLUtil
 import com.facebook.animated.webp.WebPImage
 import com.feelsokman.stickers.contentprovider.model.Sticker
 import com.feelsokman.stickers.contentprovider.model.StickerPack
-import com.feelsokman.stickers.usecase.FetchStickerAssetUseCase
 import java.net.URL
 
 class StickerPackValidator(private val fetchStickerAssetUseCase: FetchStickerAssetUseCase) {
@@ -68,13 +67,20 @@ class StickerPackValidator(private val fetchStickerAssetUseCase: FetchStickerAss
         if (!androidPlayStoreLink.isNullOrBlank() && !isValidWebsiteUrl(androidPlayStoreLink)) {
             throw IllegalStateException("Make sure to include http or https in url links, android play store link is not a valid url: $androidPlayStoreLink")
         }
-        if (!androidPlayStoreLink.isNullOrBlank() && !isURLInCorrectDomain(androidPlayStoreLink, PLAY_STORE_DOMAIN)) {
+        if (!androidPlayStoreLink.isNullOrBlank() && !isURLInCorrectDomain(
+                androidPlayStoreLink,
+                PLAY_STORE_DOMAIN
+            )
+        ) {
             throw IllegalStateException("android play store link should use play store domain: $PLAY_STORE_DOMAIN")
         }
         if (!iosAppStoreLink.isNullOrBlank() && !isValidWebsiteUrl(iosAppStoreLink)) {
             throw IllegalStateException("Make sure to include http or https in url links, ios app store link is not a valid url: " + stickerPack.iosAppStoreLink)
         }
-        if (!iosAppStoreLink.isNullOrBlank() && !isURLInCorrectDomain(stickerPack.iosAppStoreLink!!, APPLE_STORE_DOMAIN)
+        if (!iosAppStoreLink.isNullOrBlank() && !isURLInCorrectDomain(
+                stickerPack.iosAppStoreLink!!,
+                APPLE_STORE_DOMAIN
+            )
         ) {
             throw IllegalStateException("iOS app store link should use app store domain: $APPLE_STORE_DOMAIN")
         }

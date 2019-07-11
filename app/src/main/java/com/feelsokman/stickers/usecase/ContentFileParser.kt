@@ -1,4 +1,4 @@
-package com.feelsokman.stickers.contentprovider.utils
+package com.feelsokman.stickers.usecase
 
 import android.text.TextUtils
 import android.util.JsonReader

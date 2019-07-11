@@ -2,20 +2,35 @@ package com.feelsokman.stickers.ui.fragments.host.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.feelsokman.net.domain.error.DataSourceError
+import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
+import com.feelsokman.stickers.contentprovider.model.StickerPack
+import com.feelsokman.stickers.usecase.StickerPackLoaderUseCase
 import timber.log.Timber
-import java.util.UUID
 
-class HostViewModel : ViewModel() {
+class HostViewModel(private val stickerPackLoaderUseCase: StickerPackLoaderUseCase) : ViewModel() {
 
-    val textData: MutableLiveData<String> =
-        MutableLiveData<String>().apply { postValue(UUID.randomUUID().toString()) }
-
-    fun changeText() {
-        textData.postValue(UUID.randomUUID().toString())
-    }
+    val stickerData = MutableLiveData<ArrayList<StickerPack>>()
 
     override fun onCleared() {
         Timber.tag("NavigationLogger").d("HostViewModel cleared")
         super.onCleared()
+    }
+
+    fun loadStickers() {
+        stickerPackLoaderUseCase.loadStickerPacks(object : BaseDisposableUseCase.Callback<ArrayList<StickerPack>> {
+            override fun onLoadingStarted() {
+                //
+            }
+
+            override fun onSuccess(result: ArrayList<StickerPack>) {
+                stickerData.postValue(result)
+                //
+            }
+
+            override fun onError(error: DataSourceError) {
+                //
+            }
+        })
     }
 }

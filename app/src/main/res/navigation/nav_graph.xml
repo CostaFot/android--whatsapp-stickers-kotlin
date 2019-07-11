@@ -20,13 +20,7 @@
     <fragment
         android:id="@+id/anotherFragment"
         android:name="com.feelsokman.stickers.ui.fragments.another.AnotherFragment"
-        android:label="AnotherFragment">
-        <argument
-            android:name="extra_another_fragment"
-            app:argType="string"
-            android:defaultValue="extra.another" />
-
-    </fragment>
+        android:label="AnotherFragment" />
     <action
         android:id="@+id/action_global_anotherFragment"
         app:destination="@id/anotherFragment"

@@ -3,39 +3,36 @@ package com.feelsokman.stickers.usecase
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.database.Cursor
-import androidx.annotation.NonNull
 import com.feelsokman.domain.error.DataSourceErrorKind
 import com.feelsokman.net.domain.error.DataSourceError
 import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.ANDROID_APP_DOWNLOAD_LINK_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.IOS_APP_DOWNLOAD_LINK_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.LICENSE_AGREEMENT_WEBSITE
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.PRIVACY_POLICY_WEBSITE
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.PUBLISHER_EMAIL
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.PUBLISHER_WEBSITE
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.STICKER_FILE_EMOJI_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.STICKER_FILE_NAME_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.STICKER_PACK_ICON_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.STICKER_PACK_IDENTIFIER_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.STICKER_PACK_NAME_IN_QUERY
-import com.feelsokman.stickers.contentprovider.StickerContentProvider.Companion.STICKER_PACK_PUBLISHER_IN_QUERY
+import com.feelsokman.stickers.contentprovider.ANDROID_APP_DOWNLOAD_LINK_IN_QUERY
+import com.feelsokman.stickers.contentprovider.IOS_APP_DOWNLOAD_LINK_IN_QUERY
+import com.feelsokman.stickers.contentprovider.LICENSE_AGREEMENT_WEBSITE
+import com.feelsokman.stickers.contentprovider.PRIVACY_POLICY_WEBSITE
+import com.feelsokman.stickers.contentprovider.PUBLISHER_EMAIL
+import com.feelsokman.stickers.contentprovider.PUBLISHER_WEBSITE
+import com.feelsokman.stickers.contentprovider.STICKER_FILE_EMOJI_IN_QUERY
+import com.feelsokman.stickers.contentprovider.STICKER_FILE_NAME_IN_QUERY
+import com.feelsokman.stickers.contentprovider.STICKER_PACK_ICON_IN_QUERY
+import com.feelsokman.stickers.contentprovider.STICKER_PACK_IDENTIFIER_IN_QUERY
+import com.feelsokman.stickers.contentprovider.STICKER_PACK_NAME_IN_QUERY
+import com.feelsokman.stickers.contentprovider.STICKER_PACK_PUBLISHER_IN_QUERY
+import com.feelsokman.stickers.contentprovider.StickerProviderHelper
 import com.feelsokman.stickers.contentprovider.model.Sticker
 import com.feelsokman.stickers.contentprovider.model.StickerPack
-import com.feelsokman.stickers.contentprovider.utils.StickerPackValidator
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.ArrayList
 import java.util.HashSet
 
 class StickerPackLoaderUseCase(
     private val scheduler: Scheduler,
-    private val contentResolver: ContentResolver,
-    private val providerAuthority: String,
+    private val stickerProviderHelper: StickerProviderHelper,
+    private val fetchStickerAssetUseCase: FetchStickerAssetUseCase,
     private val uriResolverUseCase: UriResolverUseCase,
     private val stickerPackValidator: StickerPackValidator
 ) : BaseDisposableUseCase() {
@@ -59,8 +56,8 @@ class StickerPackLoaderUseCase(
     @SuppressLint("Recycle")
     @Throws(IllegalStateException::class)
     private fun fetchStickerPacks(): ArrayList<StickerPack> {
-        val cursor = contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)
-            ?: throw IllegalStateException("could not fetch from content provider $providerAuthority")
+        val cursor = stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)
+            ?: throw IllegalStateException("could not fetch from content provider $stickerProviderHelper.providerAuthority")
         val identifierSet = HashSet<String>()
         val stickerPackList = fetchFromContentProvider(cursor)
         for (stickerPack in stickerPackList) {
@@ -81,33 +78,23 @@ class StickerPackLoaderUseCase(
         return stickerPackList
     }
 
-    @NonNull
     private fun getStickersForPack(stickerPack: StickerPack): List<Sticker> {
-        val stickers = fetchFromContentProviderForStickers(stickerPack.identifier!!, contentResolver)
+        val stickers = fetchFromContentProviderForStickers(stickerPack.identifier!!, stickerProviderHelper.contentResolver)
         for (sticker in stickers) {
-            val bytes: ByteArray
             try {
-                bytes = fetchStickerAsset(stickerPack.identifier!!, sticker.imageFileName!!, contentResolver)
+                val bytes: ByteArray =
+                    fetchStickerAssetUseCase.fetchStickerAsset(stickerPack.identifier!!, sticker.imageFileName!!)
                 if (bytes.isEmpty()) {
-                    throw IllegalStateException("Asset file is empty, pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName)
+                    throw Exception("Asset file is empty, pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName)
                 }
                 sticker.size = bytes.size.toLong()
             } catch (e: Throwable) {
-                throw IllegalStateException(
-                    "Asset file doesn't exist. pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName,
-                    e
-                )
-            } catch (e: Throwable) {
-                throw IllegalStateException(
-                    "Asset file doesn't exist. pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName,
-                    e
-                )
+                throw Exception("Asset file doesn't exist. pack: $stickerPack.name, sticker: $sticker.imageFileName, error: ${e.localizedMessage}")
             }
         }
         return stickers
     }
 
-    @NonNull
     private fun fetchFromContentProvider(cursor: Cursor): ArrayList<StickerPack> {
         val stickerPackList = ArrayList<StickerPack>()
         cursor.moveToFirst()
@@ -139,11 +126,10 @@ class StickerPackLoaderUseCase(
         return stickerPackList
     }
 
-    @NonNull
     private fun fetchFromContentProviderForStickers(identifier: String, contentResolver: ContentResolver): List<Sticker> {
         val uri = uriResolverUseCase.getStickerListUri(identifier)
 
-        val projection = arrayOf<String>(STICKER_FILE_NAME_IN_QUERY, STICKER_FILE_EMOJI_IN_QUERY)
+        val projection = arrayOf(STICKER_FILE_NAME_IN_QUERY, STICKER_FILE_EMOJI_IN_QUERY)
         val cursor = contentResolver.query(uri, projection, null, null, null)
         val stickers = ArrayList<Sticker>()
         if (cursor != null && cursor.count > 0) {
@@ -161,22 +147,6 @@ class StickerPackLoaderUseCase(
         }
         cursor?.close()
         return stickers
-    }
-
-    @Throws(IOException::class)
-    fun fetchStickerAsset(@NonNull identifier: String, @NonNull name: String, contentResolver: ContentResolver): ByteArray {
-        contentResolver.openInputStream(uriResolverUseCase.getStickerAssetUri(identifier, name))!!.use { inputStream ->
-            ByteArrayOutputStream().use { buffer ->
-                val bytes = ByteArray(16384)
-
-                buffer.write(bytes, 0, inputStream.read(bytes))
-
-                /*while ((read = inputStream.read(data, 0, data.size)) != -1) {
-                    buffer.write(data, 0, read)
-                }*/
-                return buffer.toByteArray()
-            }
-        }
     }
 
     override fun stopAllBackgroundWork() {

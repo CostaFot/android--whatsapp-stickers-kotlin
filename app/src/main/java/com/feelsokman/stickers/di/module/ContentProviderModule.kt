@@ -1,6 +1,6 @@
 package com.feelsokman.stickers.di.module
 
-import com.feelsokman.stickers.contentprovider.utils.ContentFileParser
+import com.feelsokman.stickers.usecase.ContentFileParser
 import dagger.Module
 import dagger.Provides
 
@@ -8,5 +8,6 @@ import dagger.Provides
 class ContentProviderModule {
 
     @Provides
-    internal fun providesContentFileParser(): ContentFileParser = ContentFileParser()
+    internal fun providesContentFileParser(): ContentFileParser =
+        ContentFileParser()
 }

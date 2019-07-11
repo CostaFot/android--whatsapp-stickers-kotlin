@@ -21,11 +21,6 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Cache
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -139,38 +134,5 @@ class AppModule {
                 return activeNetworkInfo != null && activeNetworkInfo.isConnected
             }
         }
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesOkHttpClient(
-        cache: Cache,
-        isDebugEnabled: Boolean
-    ): OkHttpClient {
-        val okHttpBuilder = OkHttpClient().newBuilder()
-        val loggingInterceptor = HttpLoggingInterceptor()
-        val level = when {
-            isDebugEnabled -> HttpLoggingInterceptor.Level.BODY
-            else -> HttpLoggingInterceptor.Level.NONE
-        }
-        loggingInterceptor.level = level
-        okHttpBuilder.addInterceptor(loggingInterceptor)
-        okHttpBuilder.cache(cache)
-
-        return okHttpBuilder.build()
-    }
-
-    @Provides
-    internal fun providesRetrofit(
-        @Named(BASE_URL) baseUrl: String,
-        gson: Gson,
-        okHttpClient: OkHttpClient
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
     }
 }
