@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.content.UriMatcher
+import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Resources
 import com.feelsokman.stickers.BuildConfig
@@ -42,6 +43,12 @@ class AppModule {
     @Singleton
     fun providesAssetManager(application: Application): AssetManager {
         return application.assets
+    }
+
+    @Provides
+    @Singleton
+    fun providesPackageManager(application: Application): PackageManager {
+        return application.packageManager
     }
 
     @Provides

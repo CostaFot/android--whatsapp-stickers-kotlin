@@ -1,6 +1,5 @@
 package com.feelsokman.stickers.usecase
 
-import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.database.Cursor
 import com.feelsokman.stickers.contentprovider.ANDROID_APP_DOWNLOAD_LINK_IN_QUERY
@@ -52,13 +51,19 @@ class StickerPackLoaderUseCase(
                 )
     }
 
-    @SuppressLint("Recycle")
     @Throws(IllegalStateException::class)
     private fun fetchStickerPacks(): ArrayList<StickerPack> {
-        val cursor = stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)
-            ?: throw IllegalStateException("could not fetch from content provider $stickerProviderHelper.providerAuthority")
+        var stickerPackList: ArrayList<StickerPack> = arrayListOf()
+        try {
+            stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)?.use {
+                stickerPackList = fetchFromContentProvider(it)
+            }
+        } catch (exception: Exception) {
+            throw IllegalStateException("could not fetch from content provider $stickerProviderHelper.providerAuthority")
+        }
+
         val identifierSet = HashSet<String>()
-        val stickerPackList = fetchFromContentProvider(cursor)
+
         for (stickerPack in stickerPackList) {
             if (identifierSet.contains(stickerPack.identifier)) {
                 throw IllegalStateException("sticker pack identifiers should be unique, there are more than one pack with identifier:" + stickerPack.identifier)
@@ -122,6 +127,8 @@ class StickerPackLoaderUseCase(
             stickerPack.iosAppStoreLink = iosAppLink
             stickerPackList.add(stickerPack)
         } while (cursor.moveToNext())
+
+        cursor.close()
         return stickerPackList
     }
 

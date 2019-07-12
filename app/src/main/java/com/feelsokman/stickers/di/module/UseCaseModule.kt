@@ -1,11 +1,13 @@
 package com.feelsokman.stickers.di.module
 
 import android.content.ContentResolver
+import android.content.pm.PackageManager
 import com.feelsokman.stickers.contentprovider.StickerProviderHelper
 import com.feelsokman.stickers.usecase.FetchStickerAssetUseCase
 import com.feelsokman.stickers.usecase.StickerPackLoaderUseCase
 import com.feelsokman.stickers.usecase.StickerPackValidator
 import com.feelsokman.stickers.usecase.UriResolverUseCase
+import com.feelsokman.stickers.usecase.WhiteListCheckUseCase
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
@@ -42,4 +44,10 @@ class UseCaseModule {
         contentResolver: ContentResolver,
         uriResolverUseCase: UriResolverUseCase
     ): FetchStickerAssetUseCase = FetchStickerAssetUseCase(contentResolver, uriResolverUseCase)
+
+    @Provides
+    internal fun providesWhiteListCheckUseCase(
+        stickerProviderHelper: StickerProviderHelper,
+        packageManager: PackageManager
+    ): WhiteListCheckUseCase = WhiteListCheckUseCase(stickerProviderHelper, packageManager)
 }
