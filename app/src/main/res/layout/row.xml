@@ -3,16 +3,20 @@
     android:layout_margin="8dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/primary_dark"
     android:orientation="vertical">
 
+
     <TextView
+        android:id="@+id/textView_sitckerpack_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ffdfdf" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_child"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:text="DFgsbdfbdfbfbd" />
+        android:orientation="horizontal" />
 
 </LinearLayout>

@@ -177,6 +177,10 @@ dependencies {
     implementation rootProject.ext.dependencies.materialEditText
     implementation rootProject.ext.dependencies.shimmer
 
+    // Imaging
+    implementation rootProject.ext.dependencies.glide
+    kapt rootProject.ext.dependencies.glideCompiler
+
     // Gif
     implementation rootProject.ext.dependencies.gif
 

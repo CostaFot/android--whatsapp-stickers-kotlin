@@ -1,6 +1,5 @@
 package com.feelsokman.stickers.ui.fragments.host
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.feelsokman.stickers.R
 import com.feelsokman.stickers.contentprovider.model.StickerPack
 import com.feelsokman.stickers.ui.activity.viewmodel.MainViewModel
@@ -56,12 +56,7 @@ class HostFragment : BaseFragment() {
 
     private fun setupAdapter(view: View) {
         adapterMaster = AdapterMaster()
-
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            recyclerView.layoutManager = GridLayoutManager(view.context, 2)
-        } else {
-            recyclerView.layoutManager = GridLayoutManager(view.context, 1)
-        }
+        recyclerView.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
         recyclerView.adapter = adapterMaster
     }
 }

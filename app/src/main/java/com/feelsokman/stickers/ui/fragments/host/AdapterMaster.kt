@@ -4,10 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.feelsokman.stickers.R
 import com.feelsokman.stickers.contentprovider.model.StickerPack
+import kotlinx.android.synthetic.main.row.view.*
 
 class AdapterMaster() :
     ListAdapter<StickerPack, AdapterMaster.ItemViewHolder>(DiffCallbackStickerPack()) {
@@ -24,7 +26,20 @@ class AdapterMaster() :
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(any: StickerPack) = with(itemView) {
+        fun bind(stickerPack: StickerPack) = with(itemView) {
+            itemView.textView_sitckerpack_name.text = stickerPack.name
+            setupAdapter(itemView.recyclerView_child, stickerPack)
+        }
+
+        private fun setupAdapter(
+            recyclerView: RecyclerView,
+            stickerPack: StickerPack
+        ) {
+            val adapterChild = AdapterChild(stickerPack.identifier)
+            recyclerView.layoutManager = LinearLayoutManager(recyclerView.context, LinearLayoutManager.HORIZONTAL, false)
+            recyclerView.adapter = adapterChild
+
+            adapterChild.submitList(stickerPack.stickers)
         }
     }
 }
