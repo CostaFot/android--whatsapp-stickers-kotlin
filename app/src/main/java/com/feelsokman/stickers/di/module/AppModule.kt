@@ -11,8 +11,6 @@ import com.feelsokman.net.net.resolver.NetworkResolver
 import com.feelsokman.stickers.BuildConfig
 import com.feelsokman.stickers.R
 import com.feelsokman.stickers.contentprovider.StickerProviderHelper
-import com.feelsokman.storage.LocalStorage
-import com.feelsokman.storage.Storage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.squareup.otto.Bus
@@ -112,10 +110,6 @@ class AppModule {
 
     @Provides
     internal fun providesExecutionScheduler() = Schedulers.io()
-
-    @Provides
-    @Singleton
-    internal fun providesLocalStorage(context: Context): Storage = LocalStorage(context)
 
     @Provides
     internal fun providesNetworkResolver(context: Context): NetworkResolver {
