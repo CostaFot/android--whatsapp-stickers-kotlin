@@ -27,7 +27,7 @@ class AdapterMaster() :
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(stickerPack: StickerPack) = with(itemView) {
-            itemView.textView_sitckerpack_name.text = stickerPack.name
+            itemView.textView_stickerpack_name.text = stickerPack.name
             setupAdapter(itemView.recyclerView_child, stickerPack)
         }
 

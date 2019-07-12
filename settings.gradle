@@ -1,1 +1,1 @@
-include ':app', ':storage', ':net', ':analytics', ':database'
+include ':app', ':storage', ':net', ':analytics'
