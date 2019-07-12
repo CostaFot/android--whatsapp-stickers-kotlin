@@ -2,26 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-/*apply plugin: 'io.fabric'
-apply plugin: 'com.google.firebase.firebase-perf'*/
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+// quality checks
 apply from: '../buildsystem/quality/quality.gradle'
 apply from: '../buildsystem/quality/ktlint.gradle'
-
-/*
-
-// Create a variable called keystorePropertiesFile, and initialize it to your
-// keystore.properties file, in the rootProject folder.
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-
-// Initialize a new Properties() object called keystoreProperties.
-def keystoreProperties = new Properties()
-
-// Load your keystore.properties file into the keystoreProperties object.
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-*/
-
 
 android {
     //the compression of webp file during build causes problem with FileDescriptor in ContentProvider.
@@ -43,21 +28,10 @@ android {
         buildConfigField "String", "serverUrl", '"https://api.betterttv.net/"'
     }
 
-    signingConfigs {
-        release {
-            /*keyAlias keystoreProperties['releaseKeyAlias']
-            keyPassword keystoreProperties['releaseKeyPassword']
-            storeFile rootProject.file("keystore.jks")
-            storePassword keystoreProperties['releaseStorePassword']*/
-        }
-
-    }
-
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources false
-            //signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             applicationIdSuffix ".release"
             versionNameSuffix "-release"
@@ -121,7 +95,6 @@ android {
 }
 
 dependencies {
-    implementation project(':analytics')
     implementation project(':net')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -143,10 +116,6 @@ dependencies {
     implementation rootProject.ext.dependencies.coreKtx
     implementation rootProject.ext.dependencies.collectionsKtx
 
-    // CoRoutines
-    implementation rootProject.ext.dependencies.coroutinesCore
-    implementation rootProject.ext.dependencies.coroutinesAndroid
-
     //Navigation
     implementation rootProject.ext.dependencies.navigationFragments
     implementation rootProject.ext.dependencies.navigationUI
@@ -154,9 +123,6 @@ dependencies {
     // Rx
     implementation rootProject.ext.dependencies.rxJava2
     implementation rootProject.ext.dependencies.rxAndroid
-    //noinspection GradleDependency
-    implementation rootProject.ext.dependencies.rxPermissions
-    implementation rootProject.ext.dependencies.rxBindingMaterial
 
     // Dependency Injection
     implementation rootProject.ext.dependencies.dagger
@@ -173,7 +139,6 @@ dependencies {
     implementation rootProject.ext.dependencies.toast
     implementation rootProject.ext.dependencies.lovelydialog
     implementation rootProject.ext.dependencies.flashbar
-    implementation rootProject.ext.dependencies.materialEditText
     implementation rootProject.ext.dependencies.shimmer
 
     // Imaging
@@ -194,12 +159,7 @@ dependencies {
     // Leak detection
     debugImplementation rootProject.ext.dependencies.leakCanary
 
-    // Firebase performance
-    implementation rootProject.ext.dependencies.firebasePerformance
-    // Crashlytics
-    implementation rootProject.ext.dependencies.crashlytics
-
-    // testing (avoid androidTestImplementation if you can!)
+    // testing
     testImplementation rootProject.ext.testDependencies.jUnit
     testImplementation rootProject.ext.testDependencies.jUnitKotlin
     implementation rootProject.ext.testDependencies.testCoreX
@@ -222,7 +182,6 @@ dependencies {
     androidTestImplementation rootProject.ext.testDependencies.espresso
     androidTestImplementation rootProject.ext.testDependencies.kakaoUiTesting
 
-
     debugImplementation rootProject.ext.testDependencies.fragmentScenario
 
     implementation 'com.facebook.fresco:fresco:2.0.0'
@@ -233,4 +192,3 @@ dependencies {
     implementation 'com.facebook.fresco:animated-base:2.0.0'
 
 }
-//apply plugin: 'com.google.gms.google-services'

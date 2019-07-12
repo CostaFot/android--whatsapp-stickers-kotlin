@@ -13,7 +13,6 @@ import com.feelsokman.stickers.R
 import com.feelsokman.stickers.contentprovider.StickerProviderHelper
 import com.feelsokman.storage.LocalStorage
 import com.feelsokman.storage.Storage
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.squareup.otto.Bus
@@ -94,11 +93,6 @@ class AppModule {
     @Provides
     @Singleton
     fun providesBus(): Bus = Bus()
-
-    @Provides
-    fun providesFirebaseAnalytics(context: Context): FirebaseAnalytics {
-        return FirebaseAnalytics.getInstance(context)
-    }
 
     @Provides
     fun providesDebugFlag(): Boolean {
