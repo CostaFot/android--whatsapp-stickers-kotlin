@@ -20,19 +20,23 @@ class HostViewModel(private val stickerPackLoaderUseCase: StickerPackLoaderUseCa
     }
 
     fun loadStickers() {
-        stickerPackLoaderUseCase.loadStickerPacks(object : BaseDisposableUseCase.Callback<ArrayList<StickerPack>> {
-            override fun onLoadingStarted() {
-                //
-            }
+        if (stickerData.value.isNullOrEmpty()) {
+            stickerPackLoaderUseCase.loadStickerPacks(object : BaseDisposableUseCase.Callback<ArrayList<StickerPack>> {
+                override fun onLoadingStarted() {
+                    //
+                }
 
-            override fun onSuccess(result: ArrayList<StickerPack>) {
-                stickerData.postValue(result)
-                //
-            }
+                override fun onSuccess(result: ArrayList<StickerPack>) {
+                    stickerData.postValue(result)
+                    //
+                }
 
-            override fun onError(error: DataSourceError) {
-                errorMessage.value = error.errorMessage
-            }
-        })
+                override fun onError(error: DataSourceError) {
+                    errorMessage.value = error.errorMessage
+                }
+            })
+        } else {
+            Timber.d("StickerPacks already here")
+        }
     }
 }

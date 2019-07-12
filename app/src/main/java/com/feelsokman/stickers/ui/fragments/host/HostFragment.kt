@@ -1,5 +1,6 @@
 package com.feelsokman.stickers.ui.fragments.host
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import com.feelsokman.stickers.R
+import com.feelsokman.stickers.contentprovider.model.StickerPack
 import com.feelsokman.stickers.ui.activity.viewmodel.MainViewModel
 import com.feelsokman.stickers.ui.base.BaseFragment
 import com.feelsokman.stickers.ui.fragments.host.viewmodel.HostViewModel
@@ -28,19 +31,37 @@ class HostFragment : BaseFragment() {
     private val viewModelHost by viewModels<HostViewModel>({ this }, { factory })
     private val activityViewModel by activityViewModels<MainViewModel>()
 
+    private lateinit var adapterMaster: AdapterMaster
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupAdapter(view)
+        viewModelHost.loadStickers()
 
         viewModelHost.errorMessage.observe(viewLifecycleOwner, Observer {
             Toasty.success(view.context, it).show()
         })
 
         viewModelHost.stickerData.observe(viewLifecycleOwner, Observer { stickerPackList ->
-            Toasty.success(view.context, "SUCCESS ${stickerPackList[0].stickers!!.size}").show()
+            onResult(stickerPackList)
         })
+    }
 
-        button.setOnClickListener {
-            viewModelHost.loadStickers()
+    private fun onResult(stickerPackList: List<StickerPack>?) {
+        if (stickerPackList != null) {
+            adapterMaster.submitList(stickerPackList)
         }
+    }
+
+    private fun setupAdapter(view: View) {
+        adapterMaster = AdapterMaster()
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            recyclerView.layoutManager = GridLayoutManager(view.context, 2)
+        } else {
+            recyclerView.layoutManager = GridLayoutManager(view.context, 1)
+        }
+        recyclerView.adapter = adapterMaster
     }
 }
