@@ -1,6 +1,6 @@
-package com.feelsokman.net.domain.usecases
+package com.feelsokman.stickers.usecase
 
-import com.feelsokman.net.domain.error.DataSourceError
+import com.feelsokman.stickers.usecase.error.DataSourceError
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 

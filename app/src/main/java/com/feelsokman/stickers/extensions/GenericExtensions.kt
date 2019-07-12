@@ -1,6 +1,6 @@
 package com.feelsokman.stickers.extensions
 
-import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
+import com.feelsokman.stickers.usecase.BaseDisposableUseCase
 import io.reactivex.disposables.CompositeDisposable
 
 fun CompositeDisposable.isEmpty(): Boolean {

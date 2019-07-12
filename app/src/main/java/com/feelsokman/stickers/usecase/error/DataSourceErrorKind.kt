@@ -1,4 +1,4 @@
-package com.feelsokman.net.domain.error
+package com.feelsokman.stickers.usecase.error
 
 enum class DataSourceErrorKind {
     COMMUNICATION,

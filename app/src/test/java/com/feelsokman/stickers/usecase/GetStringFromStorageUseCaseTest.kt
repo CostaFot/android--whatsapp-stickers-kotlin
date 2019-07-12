@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.runner.AndroidJUnit4
-import com.feelsokman.net.domain.error.DataSourceError
-import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
+import com.feelsokman.stickers.usecase.error.DataSourceError
 import com.feelsokman.storage.LocalStorage
 import com.feelsokman.storage.Storage
 import io.reactivex.android.schedulers.AndroidSchedulers

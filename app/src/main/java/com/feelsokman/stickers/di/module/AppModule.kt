@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.UriMatcher
 import android.content.res.AssetManager
 import android.content.res.Resources
-import android.net.ConnectivityManager
-import com.feelsokman.net.net.resolver.NetworkResolver
 import com.feelsokman.stickers.BuildConfig
 import com.feelsokman.stickers.R
 import com.feelsokman.stickers.contentprovider.StickerProviderHelper
@@ -17,7 +15,6 @@ import com.squareup.otto.Bus
 import dagger.Module
 import dagger.Provides
 import io.reactivex.schedulers.Schedulers
-import okhttp3.Cache
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -25,15 +22,8 @@ import javax.inject.Singleton
 class AppModule {
 
     companion object {
-        const val BASE_URL = "key.base.url"
         const val CONTENT_PROVIDER_AUTHORITY = "key.content.provider.authority"
         const val PACKAGE_NAME = "key.package.name"
-    }
-
-    @Provides
-    @Singleton
-    internal fun providesCache(context: Context): Cache {
-        return Cache(context.cacheDir, 10 * 1024 * 1024)
     }
 
     @Provides
@@ -98,29 +88,10 @@ class AppModule {
     }
 
     @Provides
-    @Named(BASE_URL)
-    fun providesBaseUrl(): String {
-        return BuildConfig.serverUrl
-    }
-
-    @Provides
     fun providesGson(): Gson {
         return GsonBuilder().setPrettyPrinting().create()
     }
 
     @Provides
     internal fun providesExecutionScheduler() = Schedulers.io()
-
-    @Provides
-    internal fun providesNetworkResolver(context: Context): NetworkResolver {
-
-        return object : NetworkResolver {
-            override fun isConnected(): Boolean {
-                val connectivityManager =
-                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-                val activeNetworkInfo = connectivityManager!!.activeNetworkInfo
-                return activeNetworkInfo != null && activeNetworkInfo.isConnected
-            }
-        }
-    }
 }

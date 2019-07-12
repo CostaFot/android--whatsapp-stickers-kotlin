@@ -3,9 +3,6 @@ package com.feelsokman.stickers.usecase
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.database.Cursor
-import com.feelsokman.net.domain.error.DataSourceError
-import com.feelsokman.net.domain.error.DataSourceErrorKind
-import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
 import com.feelsokman.stickers.contentprovider.ANDROID_APP_DOWNLOAD_LINK_IN_QUERY
 import com.feelsokman.stickers.contentprovider.IOS_APP_DOWNLOAD_LINK_IN_QUERY
 import com.feelsokman.stickers.contentprovider.LICENSE_AGREEMENT_WEBSITE
@@ -21,6 +18,8 @@ import com.feelsokman.stickers.contentprovider.STICKER_PACK_PUBLISHER_IN_QUERY
 import com.feelsokman.stickers.contentprovider.StickerProviderHelper
 import com.feelsokman.stickers.contentprovider.model.Sticker
 import com.feelsokman.stickers.contentprovider.model.StickerPack
+import com.feelsokman.stickers.usecase.error.DataSourceError
+import com.feelsokman.stickers.usecase.error.DataSourceErrorKind
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

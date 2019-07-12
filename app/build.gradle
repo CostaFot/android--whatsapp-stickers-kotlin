@@ -24,8 +24,6 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField "String", "serverUrl", '"https://api.betterttv.net/"'
     }
 
     buildTypes {
@@ -95,7 +93,6 @@ android {
 }
 
 dependencies {
-    implementation project(':net')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
@@ -147,6 +144,9 @@ dependencies {
 
     // Gif
     implementation rootProject.ext.dependencies.gif
+
+    // Gson
+    implementation rootProject.ext.dependencies.gson
 
     // Animations
     implementation rootProject.ext.dependencies.animations1

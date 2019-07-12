@@ -2,11 +2,11 @@ package com.feelsokman.stickers.ui.fragments.host.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.feelsokman.net.domain.error.DataSourceError
-import com.feelsokman.net.domain.usecases.BaseDisposableUseCase
 import com.feelsokman.stickers.contentprovider.model.StickerPack
 import com.feelsokman.stickers.ui.SingleLiveEvent
+import com.feelsokman.stickers.usecase.BaseDisposableUseCase
 import com.feelsokman.stickers.usecase.StickerPackLoaderUseCase
+import com.feelsokman.stickers.usecase.error.DataSourceError
 import timber.log.Timber
 
 class HostViewModel(private val stickerPackLoaderUseCase: StickerPackLoaderUseCase) : ViewModel() {
