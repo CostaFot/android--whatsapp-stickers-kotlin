@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -33,19 +34,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initial setup!
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        val navController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.hostFragment -> Timber.tag("NavigationLogger").d("hostFragment showing!")
-                R.id.anotherFragment -> Timber.tag("NavigationLogger").d("anotherFragment showing!")
-            }
-        }
+        setupToolbar()
 
         mainViewModel.errorMessage.observe(this, Observer {
             Toasty.error(this, it).show()
@@ -59,6 +48,25 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         mainViewModel.loadStickers()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        val navController = findNavController(R.id.nav_host_fragment)
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        setupDestinationListener(navController)
+    }
+
+    private fun setupDestinationListener(navController: NavController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.hostFragment -> Timber.tag("NavigationLogger").d("hostFragment showing!")
+                R.id.anotherFragment -> Timber.tag("NavigationLogger").d("anotherFragment showing!")
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
