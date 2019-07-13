@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import com.costafot.stickers.contentprovider.StickerProviderHelper
 import com.costafot.stickers.usecase.ContentFileParser
 import com.costafot.stickers.usecase.FetchStickerAssetUseCase
+import com.costafot.stickers.usecase.IntentResolverUseCase
 import com.costafot.stickers.usecase.StickerPackLoaderUseCase
 import com.costafot.stickers.usecase.StickerPackValidator
 import com.costafot.stickers.usecase.UriResolverUseCase
@@ -58,4 +59,9 @@ class UseCaseModule {
         stickerProviderHelper: StickerProviderHelper,
         packageManager: PackageManager
     ): WhiteListCheckUseCase = WhiteListCheckUseCase(scheduler, stickerProviderHelper, packageManager)
+
+    @Provides
+    internal fun providesIntentResolverUseCase(
+        @Named(AppModule.CONTENT_PROVIDER_AUTHORITY) providerAuthority: String
+    ): IntentResolverUseCase = IntentResolverUseCase(providerAuthority)
 }

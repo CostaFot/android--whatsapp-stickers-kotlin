@@ -1,5 +1,7 @@
 package com.costafot.stickers.ui.activity
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -43,6 +45,39 @@ class MainActivity : BaseActivity() {
         mainViewModel.toastSingleLiveEvent.observe(this, Observer {
             Toasty.error(this, getString(it)).show()
         })
+
+        mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer {
+            when (it) {
+                is LaunchIntentContainer.Chooser -> {
+                    launchIntentToAddPackToChooser(it.identifier, it.packName)
+                }
+                is LaunchIntentContainer.Specific -> {
+                    launchIntentToAddPackToSpecificPackage(it.identifier, it.packName, it.specificPackage)
+                }
+            }
+        })
+    }
+
+    // Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
+    private fun launchIntentToAddPackToChooser(identifier: String, stickerPackName: String) {
+        val intent = mainViewModel.getIntentToAddStickerPack(identifier, stickerPackName)
+        try {
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), ADD_PACK)
+        } catch (e: ActivityNotFoundException) {
+            Toasty.error(this, getString(R.string.add_pack_fail_prompt_update_whatsapp)).show()
+        }
+    }
+
+    private fun launchIntentToAddPackToSpecificPackage(identifier: String, stickerPackName: String, whatsappPackageName: String) {
+        val intent = mainViewModel.getIntentToAddStickerPack(identifier, stickerPackName)
+        intent.apply {
+            setPackage(whatsappPackageName)
+        }
+        try {
+            startActivityForResult(intent, ADD_PACK)
+        } catch (e: ActivityNotFoundException) {
+            Toasty.error(this, getString(R.string.add_pack_fail_prompt_update_whatsapp)).show()
+        }
     }
 
     override fun onResume() {
@@ -82,5 +117,21 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
+    }
+
+    companion object {
+        const val EXTRA_STICKER_PACK_ID = "sticker_pack_id"
+        const val EXTRA_STICKER_PACK_AUTHORITY = "sticker_pack_authority"
+        const val EXTRA_STICKER_PACK_NAME = "sticker_pack_name"
+
+        const val EXTRA_STICKER_PACK_WEBSITE = "sticker_pack_website"
+        const val EXTRA_STICKER_PACK_EMAIL = "sticker_pack_email"
+        const val EXTRA_STICKER_PACK_PRIVACY_POLICY = "sticker_pack_privacy_policy"
+        const val EXTRA_STICKER_PACK_LICENSE_AGREEMENT = "sticker_pack_license_agreement"
+        const val EXTRA_STICKER_PACK_TRAY_ICON = "sticker_pack_tray_icon"
+        const val EXTRA_SHOW_UP_BUTTON = "show_up_button"
+        const val EXTRA_STICKER_PACK_DATA = "sticker_pack"
+
+        const val ADD_PACK = 200
     }
 }

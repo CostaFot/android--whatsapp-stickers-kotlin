@@ -1,5 +1,6 @@
 package com.costafot.stickers.ui.activity.viewmodel
 
+import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.costafot.stickers.R
@@ -13,6 +14,7 @@ import com.costafot.stickers.usecase.AddStickerPackActions.APPS_NOT_FOUND
 import com.costafot.stickers.usecase.AddStickerPackActions.ASK_USER_WHICH_APP
 import com.costafot.stickers.usecase.AddStickerPackActions.PROMPT_UPDATE_CAUSE_FAILURE
 import com.costafot.stickers.usecase.BaseDisposableUseCase
+import com.costafot.stickers.usecase.IntentResolverUseCase
 import com.costafot.stickers.usecase.StickerPackLoaderUseCase
 import com.costafot.stickers.usecase.WhiteListCheckUseCase
 import com.costafot.stickers.usecase.error.DataSourceError
@@ -20,7 +22,8 @@ import timber.log.Timber
 
 class MainViewModel(
     private val stickerPackLoaderUseCase: StickerPackLoaderUseCase,
-    private val whiteListCheckUseCase: WhiteListCheckUseCase
+    private val whiteListCheckUseCase: WhiteListCheckUseCase,
+    private val intentResolverUseCase: IntentResolverUseCase
 ) : ViewModel() {
 
     val toastSingleLiveEvent = SingleLiveEvent<Int>()
@@ -88,6 +91,10 @@ class MainViewModel(
                     toastSingleLiveEvent.value = R.string.add_pack_fail_prompt_update_whatsapp
                 }
             })
+    }
+
+    fun getIntentToAddStickerPack(identifier: String, packName: String): Intent {
+        return intentResolverUseCase.createIntentToAddStickerPack(identifier, packName)
     }
 
     override fun onCleared() {
