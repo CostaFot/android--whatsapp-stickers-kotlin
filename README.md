@@ -21,4 +21,5 @@ A version of the sample android app following (loosely):
 
 `RxJava`
 
-
+## Licence
+[Licence file here](https://github.com/CostaFot/android--whatsapp-stickers-kotlin/blob/master/LICENSE)
