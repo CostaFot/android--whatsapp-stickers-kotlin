@@ -10,13 +10,13 @@ Wanted to make a sticker app for fun an afternoon after work and this happened.
 
 A version of the sample android app following (loosely):
 
-`MVVM`
+- MVVM
 
-`Dagger2-android` for dependency injection.
+- Dagger2-android for dependency injection.
 
-`Navigation AAC`
+- Navigation AAC
 
-`RxJava`
+- RxJava
 
 
 You are free to use this repo for your own project with proper attribution.
