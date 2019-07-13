@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.feelsokman.stickers">
+    package="com.costafot.stickers">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -10,7 +10,7 @@
 
 
     <application
-        android:name="com.feelsokman.stickers.StickerApplication"
+        android:name="com.costafot.stickers.StickerApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -19,7 +19,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name="com.feelsokman.stickers.ui.activity.MainActivity"
+            android:name="com.costafot.stickers.ui.activity.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +29,7 @@
         </activity>
 
         <provider
-            android:name=".contentprovider.StickerContentProvider"
+            android:name="com.costafot.stickers.contentprovider.StickerContentProvider"
             android:authorities="@string/content_provider_authority"
             android:enabled="true"
             android:exported="true"

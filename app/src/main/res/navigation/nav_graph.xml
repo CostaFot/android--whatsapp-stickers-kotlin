@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/hostFragment"
-        android:name="com.feelsokman.stickers.ui.fragments.host.HostFragment"
+        android:name="com.costafot.stickers.ui.fragments.host.HostFragment"
         android:label="HostFragment">
         <action
             android:id="@+id/action_hostFragment_to_anotherFragment"
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/anotherFragment"
-        android:name="com.feelsokman.stickers.ui.fragments.another.AnotherFragment"
+        android:name="com.costafot.stickers.ui.fragments.another.AnotherFragment"
         android:label="AnotherFragment" />
     <action
         android:id="@+id/action_global_anotherFragment"

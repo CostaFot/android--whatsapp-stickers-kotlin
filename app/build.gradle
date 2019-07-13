@@ -17,7 +17,7 @@ android {
     testOptions.unitTests.includeAndroidResources = true
 
     defaultConfig {
-        applicationId "com.feelsokman.stickers"
+        applicationId "com.costafot.stickers"
         minSdkVersion rootProject.ext.androidVersions.minSdkVersion
         targetSdkVersion rootProject.ext.androidVersions.targetSdkVersion
         versionCode 1
