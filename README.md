@@ -1,6 +1,13 @@
 # WhatsApp Stickers in Kotlin
 
-Work in progress.
+## All rights reserved to WhatsApp. You can find the original sample app here:
+https://github.com/WhatsApp/stickers
+
+## Work in progress, quite a few things *TODO*.
+
+You are free to use this repo for your own project with proper attribution.
+
+If you do use it, shoot me a message so we can showcase your app here if you want :)
 
 Wanted to make a sticker app for fun an afternoon after work and this happened.
 
