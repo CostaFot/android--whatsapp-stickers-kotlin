@@ -4,25 +4,36 @@ import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.net.Uri
 import com.costafot.stickers.contentprovider.StickerProviderHelper
+import com.costafot.stickers.usecase.error.DataSourceError
+import com.costafot.stickers.usecase.error.DataSourceErrorKind
+import io.reactivex.Scheduler
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 class WhiteListCheckUseCase(
+    private val scheduler: Scheduler,
     private val stickerProviderHelper: StickerProviderHelper,
     private val packageManager: PackageManager
-) {
+) : BaseDisposableUseCase() {
+
+    override val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    override var latestDisposable: Disposable? = null
 
     companion object {
-        private const val AUTHORITY_QUERY_PARAM = "authority"
-        private const val IDENTIFIER_QUERY_PARAM = "identifier"
-        private const val CONSUMER_WHATSAPP_PACKAGE_NAME = "com.whatsapp"
-        private const val SMB_WHATSAPP_PACKAGE_NAME = "com.whatsapp.w4b"
-        private const val CONTENT_PROVIDER = ".provider.sticker_whitelist_check"
-        private const val QUERY_PATH = "is_whitelisted"
-        private const val QUERY_RESULT_COLUMN_NAME = "result"
+        const val AUTHORITY_QUERY_PARAM = "authority"
+        const val IDENTIFIER_QUERY_PARAM = "identifier"
+        const val CONSUMER_WHATSAPP_PACKAGE_NAME = "com.whatsapp"
+        const val SMB_WHATSAPP_PACKAGE_NAME = "com.whatsapp.w4b"
+        const val CONTENT_PROVIDER = ".provider.sticker_whitelist_check"
+        const val QUERY_PATH = "is_whitelisted"
+        const val QUERY_RESULT_COLUMN_NAME = "result"
     }
 
     fun isWhitelisted(identifier: String): Boolean {
         try {
-            if (!isWhatsAppConsumerAppInstalled(packageManager) && !isWhatsAppSmbAppInstalled(packageManager)) {
+            if (!isWhatsAppConsumerAppInstalled() && !isWhatsAppSmbAppInstalled()) {
                 return false
             }
             val consumerResult = isStickerPackWhitelistedInWhatsAppConsumer(identifier)
@@ -65,11 +76,11 @@ class WhiteListCheckUseCase(
         }
     }
 
-    private fun isWhatsAppConsumerAppInstalled(packageManager: PackageManager): Boolean {
+    private fun isWhatsAppConsumerAppInstalled(): Boolean {
         return isPackageInstalled(CONSUMER_WHATSAPP_PACKAGE_NAME, packageManager)
     }
 
-    private fun isWhatsAppSmbAppInstalled(packageManager: PackageManager): Boolean {
+    private fun isWhatsAppSmbAppInstalled(): Boolean {
         return isPackageInstalled(SMB_WHATSAPP_PACKAGE_NAME, packageManager)
     }
 
@@ -80,4 +91,49 @@ class WhiteListCheckUseCase(
     private fun isStickerPackWhitelistedInWhatsAppSmb(identifier: String): Boolean {
         return isWhitelistedFromProvider(identifier, SMB_WHATSAPP_PACKAGE_NAME)
     }
+
+    fun resolveActionAddStickerPack(identifier: String, callback: Callback<AddStickerPackActions>) {
+        latestDisposable?.dispose()
+        latestDisposable =
+            Single.fromCallable { resolve(identifier) }
+                .subscribeOn(scheduler)
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { action -> callback.onSuccess(action) },
+                    { error -> callback.onError(DataSourceError(error.localizedMessage, DataSourceErrorKind.UNEXPECTED)) }
+                )
+    }
+
+    private fun resolve(identifier: String): AddStickerPackActions {
+        // if neither WhatsApp Consumer or WhatsApp Business is installed, then tell user to install the apps.
+        if (!isWhatsAppConsumerAppInstalled() && !isWhatsAppSmbAppInstalled()) {
+            return AddStickerPackActions.APPS_NOT_FOUND
+        }
+        val stickerPackWhitelistedInWhatsAppConsumer = isStickerPackWhitelistedInWhatsAppConsumer(identifier)
+        val stickerPackWhitelistedInWhatsAppSmb = isStickerPackWhitelistedInWhatsAppSmb(identifier)
+
+        return if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
+            // ask users which app to add the pack to.
+            AddStickerPackActions.ASK_USER_WHICH_APP
+        } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
+            AddStickerPackActions.ADD_TO_CONSUMER
+        } else if (!stickerPackWhitelistedInWhatsAppSmb) {
+            AddStickerPackActions.ADD_TO_BUSINESS
+        } else {
+            AddStickerPackActions.PROMPT_UPDATE_CAUSE_FAILURE
+        }
+    }
+
+    override fun stopAllBackgroundWork() {
+        compositeDisposable.clear()
+    }
+}
+
+enum class AddStickerPackActions {
+    APPS_NOT_FOUND,
+    ASK_USER_WHICH_APP,
+    ADD_TO_CONSUMER,
+    ADD_TO_BUSINESS,
+    PROMPT_UPDATE_CAUSE_FAILURE
 }

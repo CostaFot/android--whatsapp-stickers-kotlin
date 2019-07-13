@@ -54,7 +54,8 @@ class UseCaseModule {
 
     @Provides
     internal fun providesWhiteListCheckUseCase(
+        scheduler: Scheduler,
         stickerProviderHelper: StickerProviderHelper,
         packageManager: PackageManager
-    ): WhiteListCheckUseCase = WhiteListCheckUseCase(stickerProviderHelper, packageManager)
+    ): WhiteListCheckUseCase = WhiteListCheckUseCase(scheduler, stickerProviderHelper, packageManager)
 }

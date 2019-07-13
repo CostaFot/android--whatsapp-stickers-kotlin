@@ -35,10 +35,6 @@ class AnotherFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activityViewModel.textData.observe(viewLifecycleOwner, Observer {
-            Timber.tag("NavigationLogger").e("AnotherFragment Activity string is $it")
-        })
-
         viewModelAnother.textData.observe(viewLifecycleOwner, Observer { stringFromStorage ->
             Timber.tag("NavigationLogger").e("AnotherFragment storage string is $stringFromStorage")
         })

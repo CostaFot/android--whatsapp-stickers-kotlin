@@ -11,8 +11,12 @@ import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import kotlinx.android.synthetic.main.row_parent.view.*
 
-class AdapterParent() :
+class AdapterParent(private val callback: Callback) :
     ListAdapter<StickerPack, AdapterParent.ItemViewHolder>(DiffCallbackStickerPack()) {
+
+    interface Callback {
+        fun onAddButtonClicked(identifier: String, name: String)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
@@ -21,14 +25,19 @@ class AdapterParent() :
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), callback)
     }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(stickerPack: StickerPack) = with(itemView) {
+        fun bind(stickerPack: StickerPack, callback: Callback) = with(itemView) {
+
             itemView.textView_stickerpack_name.text = stickerPack.name
             setupAdapter(itemView.recyclerView_child, stickerPack)
+
+            itemView.button_add.setOnClickListener {
+                callback.onAddButtonClicked(stickerPack.identifier!!, stickerPack.name!!)
+            }
         }
 
         private fun setupAdapter(

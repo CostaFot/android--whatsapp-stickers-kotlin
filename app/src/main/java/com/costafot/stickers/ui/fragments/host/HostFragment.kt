@@ -18,7 +18,11 @@ import com.costafot.stickers.ui.fragments.host.viewmodel.HostViewModelFactory
 import kotlinx.android.synthetic.main.fragment_host.*
 import javax.inject.Inject
 
-class HostFragment : BaseFragment() {
+class HostFragment : BaseFragment(), AdapterParent.Callback {
+
+    override fun onAddButtonClicked(identifier: String, name: String) {
+        activityViewModel.tryToAddStickerPack(identifier, name)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.fragment_host, container, false)
@@ -49,7 +53,7 @@ class HostFragment : BaseFragment() {
     }
 
     private fun setupAdapter(view: View) {
-        adapterParent = AdapterParent()
+        adapterParent = AdapterParent(this)
         recyclerView.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
         recyclerView.adapter = adapterParent
     }

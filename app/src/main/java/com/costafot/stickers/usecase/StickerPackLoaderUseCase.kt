@@ -40,7 +40,6 @@ class StickerPackLoaderUseCase(
     override var latestDisposable: Disposable? = null
 
     fun loadStickerPacks(callback: Callback<ArrayList<StickerPack>>) {
-        val ff = AndroidSchedulers.mainThread()
         latestDisposable?.dispose()
         latestDisposable =
             Single.fromCallable { fetchStickerPacks() }

@@ -40,8 +40,8 @@ class MainActivity : BaseActivity() {
             Toasty.error(this, it).show()
         })
 
-        mainViewModel.textData.observe(this, Observer {
-            Timber.tag("NavigationLogger").e("MainActivity $it")
+        mainViewModel.toastSingleLiveEvent.observe(this, Observer {
+            Toasty.error(this, getString(it)).show()
         })
     }
 
