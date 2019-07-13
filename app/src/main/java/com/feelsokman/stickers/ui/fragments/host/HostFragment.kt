@@ -37,7 +37,6 @@ class HostFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupAdapter(view)
-        viewModelHost.loadStickers()
 
         viewModelHost.errorMessage.observe(viewLifecycleOwner, Observer {
             Toasty.success(view.context, it).show()
@@ -58,5 +57,10 @@ class HostFragment : BaseFragment() {
         adapterMaster = AdapterMaster()
         recyclerView.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
         recyclerView.adapter = adapterMaster
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModelHost.loadStickers()
     }
 }

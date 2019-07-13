@@ -20,7 +20,7 @@ class WhiteListCheckUseCase(
         private const val QUERY_RESULT_COLUMN_NAME = "result"
     }
 
-    private fun isWhitelisted(identifier: String): Boolean {
+    fun isWhitelisted(identifier: String): Boolean {
         try {
             if (!isWhatsAppConsumerAppInstalled(packageManager) && !isWhatsAppSmbAppInstalled(packageManager)) {
                 return false

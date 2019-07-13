@@ -32,13 +32,15 @@ class StickerPackLoaderUseCase(
     private val stickerProviderHelper: StickerProviderHelper,
     private val fetchStickerAssetUseCase: FetchStickerAssetUseCase,
     private val uriResolverUseCase: UriResolverUseCase,
-    private val stickerPackValidator: StickerPackValidator
+    private val stickerPackValidator: StickerPackValidator,
+    private val whiteListCheckUseCase: WhiteListCheckUseCase
 ) : BaseDisposableUseCase() {
 
     override val compositeDisposable: CompositeDisposable = CompositeDisposable()
     override var latestDisposable: Disposable? = null
 
     fun loadStickerPacks(callback: Callback<ArrayList<StickerPack>>) {
+        val ff = AndroidSchedulers.mainThread()
         latestDisposable?.dispose()
         latestDisposable =
             Single.fromCallable { fetchStickerPacks() }
@@ -51,19 +53,17 @@ class StickerPackLoaderUseCase(
                 )
     }
 
-    @Throws(IllegalStateException::class)
     private fun fetchStickerPacks(): ArrayList<StickerPack> {
         var stickerPackList: ArrayList<StickerPack> = arrayListOf()
         try {
             stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)?.use {
                 stickerPackList = fetchFromContentProvider(it)
             }
-        } catch (exception: Exception) {
-            throw IllegalStateException("could not fetch from content provider $stickerProviderHelper.providerAuthority")
+        } catch (e: Exception) {
+            throw Exception("could not fetch from content provider $stickerProviderHelper.providerAuthority, error ${e.localizedMessage}")
         }
 
         val identifierSet = HashSet<String>()
-
         for (stickerPack in stickerPackList) {
             if (identifierSet.contains(stickerPack.identifier)) {
                 throw IllegalStateException("sticker pack identifiers should be unique, there are more than one pack with identifier:" + stickerPack.identifier)
@@ -78,6 +78,11 @@ class StickerPackLoaderUseCase(
             val stickers = getStickersForPack(stickerPack)
             stickerPack.resetStickers(stickers)
             stickerPackValidator.verifyStickerPackValidity(stickerPack)
+        }
+
+        for (stickerPack in stickerPackList) {
+
+            stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier!!)
         }
         return stickerPackList
     }

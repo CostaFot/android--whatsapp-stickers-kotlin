@@ -26,13 +26,15 @@ class UseCaseModule {
         stickerProviderHelper: StickerProviderHelper,
         fetchStickerAssetUseCase: FetchStickerAssetUseCase,
         uriResolverUseCase: UriResolverUseCase,
-        stickerPackValidator: StickerPackValidator
+        stickerPackValidator: StickerPackValidator,
+        whiteListCheckUseCase: WhiteListCheckUseCase
     ): StickerPackLoaderUseCase = StickerPackLoaderUseCase(
         scheduler,
         stickerProviderHelper,
         fetchStickerAssetUseCase,
         uriResolverUseCase,
-        stickerPackValidator
+        stickerPackValidator,
+        whiteListCheckUseCase
     )
 
     @Provides

@@ -50,6 +50,6 @@ class DiffCallbackStickerPack : DiffUtil.ItemCallback<StickerPack>() {
     }
 
     override fun areContentsTheSame(oldItem: StickerPack, newItem: StickerPack): Boolean {
-        return oldItem.identifier == newItem.identifier
+        return oldItem.isWhitelisted == newItem.isWhitelisted
     }
 }
