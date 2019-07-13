@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.costafot.stickers.R
@@ -19,6 +20,10 @@ import kotlinx.android.synthetic.main.fragment_host.*
 import javax.inject.Inject
 
 class HostFragment : BaseFragment(), AdapterParent.Callback {
+    override fun onSeeMoreClicked(position: Int) {
+        activityViewModel.updateDetailsStickerPack(position)
+        findNavController().navigate(R.id.action_hostFragment_to_detailsFragment)
+    }
 
     override fun onAddButtonClicked(identifier: String, name: String) {
         activityViewModel.tryToAddStickerPack(identifier, name)

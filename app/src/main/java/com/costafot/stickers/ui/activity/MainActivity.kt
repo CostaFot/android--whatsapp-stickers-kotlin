@@ -50,10 +50,10 @@ class MainActivity : BaseActivity() {
 
         mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer {
             when (it) {
-                is LaunchIntentContainer.Chooser -> {
+                is LaunchIntentCommand.Chooser -> {
                     launchIntentToAddPackToChooser(it.identifier, it.packName)
                 }
-                is LaunchIntentContainer.Specific -> {
+                is LaunchIntentCommand.Specific -> {
                     launchIntentToAddPackToSpecificPackage(it.identifier, it.packName, it.specificPackage)
                 }
             }

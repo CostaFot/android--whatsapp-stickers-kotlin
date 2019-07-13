@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.ui.SingleLiveEvent
-import com.costafot.stickers.ui.activity.LaunchIntentContainer
+import com.costafot.stickers.ui.activity.LaunchIntentCommand
 import com.costafot.stickers.usecase.AddStickerPackActions
 import com.costafot.stickers.usecase.AddStickerPackActions.ADD_TO_BUSINESS
 import com.costafot.stickers.usecase.AddStickerPackActions.ADD_TO_CONSUMER
@@ -27,8 +27,9 @@ class MainViewModel(
 ) : ViewModel() {
 
     val toastSingleLiveEvent = SingleLiveEvent<Int>()
-    val launchIntentSingleLiveEvent = SingleLiveEvent<LaunchIntentContainer>()
+    val launchIntentSingleLiveEvent = SingleLiveEvent<LaunchIntentCommand>()
     val stickerData = MutableLiveData<ArrayList<StickerPack>>()
+    val detailsStickerPackData = MutableLiveData<StickerPack>()
     val errorMessage = SingleLiveEvent<String>()
 
     fun loadStickers() {
@@ -63,11 +64,11 @@ class MainViewModel(
                             toastSingleLiveEvent.value = R.string.add_pack_fail_prompt_update_whatsapp
                         }
                         ASK_USER_WHICH_APP -> {
-                            launchIntentSingleLiveEvent.value = LaunchIntentContainer.Chooser(identifier, packName)
+                            launchIntentSingleLiveEvent.value = LaunchIntentCommand.Chooser(identifier, packName)
                         }
                         ADD_TO_CONSUMER -> {
                             launchIntentSingleLiveEvent.value =
-                                LaunchIntentContainer.Specific(
+                                LaunchIntentCommand.Specific(
                                     identifier,
                                     packName,
                                     WhiteListCheckUseCase.CONSUMER_WHATSAPP_PACKAGE_NAME
@@ -75,7 +76,7 @@ class MainViewModel(
                         }
                         ADD_TO_BUSINESS -> {
                             launchIntentSingleLiveEvent.value =
-                                LaunchIntentContainer.Specific(
+                                LaunchIntentCommand.Specific(
                                     identifier,
                                     packName,
                                     WhiteListCheckUseCase.SMB_WHATSAPP_PACKAGE_NAME
@@ -95,6 +96,10 @@ class MainViewModel(
 
     fun getIntentToAddStickerPack(identifier: String, packName: String): Intent {
         return intentResolverUseCase.createIntentToAddStickerPack(identifier, packName)
+    }
+
+    fun updateDetailsStickerPack(position: Int) {
+        detailsStickerPackData.postValue(stickerData.value?.get(position))
     }
 
     override fun onCleared() {

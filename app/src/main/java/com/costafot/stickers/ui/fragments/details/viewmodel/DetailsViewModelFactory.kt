@@ -1,13 +1,13 @@
-package com.costafot.stickers.ui.fragments.another.viewmodel
+package com.costafot.stickers.ui.fragments.details.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class AnotherViewModelFactory() : ViewModelProvider.Factory {
+class DetailsViewModelFactory() : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
 
-        return AnotherViewModel() as T
+        return DetailsViewModel() as T
     }
 }

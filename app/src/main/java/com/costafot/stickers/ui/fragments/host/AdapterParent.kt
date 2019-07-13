@@ -16,6 +16,8 @@ class AdapterParent(private val callback: Callback) :
 
     interface Callback {
         fun onAddButtonClicked(identifier: String, name: String)
+
+        fun onSeeMoreClicked(position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -25,15 +27,19 @@ class AdapterParent(private val callback: Callback) :
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(getItem(position), callback)
+        holder.bind(position, getItem(position), callback)
     }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(stickerPack: StickerPack, callback: Callback) = with(itemView) {
+        fun bind(position: Int, stickerPack: StickerPack, callback: Callback) = with(itemView) {
 
             itemView.textView_stickerpack_name.text = stickerPack.name
             setupAdapter(itemView.recyclerView_child, stickerPack)
+
+            itemView.button_see_more.setOnClickListener {
+                callback.onSeeMoreClicked(position)
+            }
 
             when (stickerPack.isWhitelisted) {
                 true -> {

@@ -9,8 +9,8 @@
         android:name="com.costafot.stickers.ui.fragments.host.HostFragment"
         android:label="HostFragment">
         <action
-            android:id="@+id/action_hostFragment_to_anotherFragment"
-            app:destination="@id/anotherFragment"
+            android:id="@+id/action_hostFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment"
             app:enterAnim="@anim/enter_from_left"
             app:exitAnim="@anim/exit_to_right"
             app:popEnterAnim="@anim/enter_from_left"
@@ -18,17 +18,17 @@
         </action>
     </fragment>
     <fragment
-        android:id="@+id/anotherFragment"
-        android:name="com.costafot.stickers.ui.fragments.another.AnotherFragment"
-        android:label="AnotherFragment" />
+        android:id="@+id/detailsFragment"
+        android:name="com.costafot.stickers.ui.fragments.details.DetailsFragment"
+        android:label="DetailsFragment"></fragment>
     <action
         android:id="@+id/action_global_anotherFragment"
-        app:destination="@id/anotherFragment"
+        app:destination="@id/detailsFragment"
         app:enterAnim="@anim/enter_from_left"
         app:exitAnim="@anim/exit_to_right"
         app:popEnterAnim="@anim/enter_from_left"
         app:popExitAnim="@anim/exit_to_right"
-        app:popUpTo="@+id/anotherFragment"
+        app:popUpTo="@+id/detailsFragment"
         app:popUpToInclusive="true">
     </action>
 </navigation>

@@ -13,7 +13,7 @@
                       <LayoutPositions />
                     </value>
                   </entry>
-                  <entry key="anotherFragment">
+                  <entry key="detailsFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
@@ -36,7 +36,7 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_hostFragment_to_anotherFragment">
+                            <entry key="action_hostFragment_to_detailsFragment">
                               <value>
                                 <LayoutPositions />
                               </value>
