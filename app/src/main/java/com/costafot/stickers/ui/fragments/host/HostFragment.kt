@@ -15,7 +15,6 @@ import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.base.BaseFragment
 import com.costafot.stickers.ui.fragments.host.viewmodel.HostViewModel
 import com.costafot.stickers.ui.fragments.host.viewmodel.HostViewModelFactory
-import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.fragment_host.*
 import javax.inject.Inject
 
@@ -31,36 +30,27 @@ class HostFragment : BaseFragment() {
     private val viewModelHost by viewModels<HostViewModel>({ this }, { factory })
     private val activityViewModel by activityViewModels<MainViewModel>()
 
-    private lateinit var adapterMaster: AdapterMaster
+    private lateinit var adapterParent: AdapterParent
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupAdapter(view)
 
-        viewModelHost.errorMessage.observe(viewLifecycleOwner, Observer {
-            Toasty.success(view.context, it).show()
-        })
-
-        viewModelHost.stickerData.observe(viewLifecycleOwner, Observer { stickerPackList ->
+        activityViewModel.stickerData.observe(viewLifecycleOwner, Observer { stickerPackList ->
             onResult(stickerPackList)
         })
     }
 
     private fun onResult(stickerPackList: List<StickerPack>?) {
         if (stickerPackList != null) {
-            adapterMaster.submitList(stickerPackList)
+            adapterParent.submitList(stickerPackList)
         }
     }
 
     private fun setupAdapter(view: View) {
-        adapterMaster = AdapterMaster()
+        adapterParent = AdapterParent()
         recyclerView.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
-        recyclerView.adapter = adapterMaster
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModelHost.loadStickers()
+        recyclerView.adapter = adapterParent
     }
 }

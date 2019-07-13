@@ -14,6 +14,7 @@ import com.costafot.stickers.R
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModelFactory
 import com.costafot.stickers.ui.base.BaseActivity
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,9 +47,18 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        mainViewModel.errorMessage.observe(this, Observer {
+            Toasty.error(this, it).show()
+        })
+
         mainViewModel.textData.observe(this, Observer {
             Timber.tag("NavigationLogger").e("MainActivity $it")
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.loadStickers()
     }
 
     override fun onSupportNavigateUp(): Boolean {
