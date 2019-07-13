@@ -35,8 +35,16 @@ class AdapterParent(private val callback: Callback) :
             itemView.textView_stickerpack_name.text = stickerPack.name
             setupAdapter(itemView.recyclerView_child, stickerPack)
 
-            itemView.button_add.setOnClickListener {
-                callback.onAddButtonClicked(stickerPack.identifier!!, stickerPack.name!!)
+            when (stickerPack.isWhitelisted) {
+                true -> {
+                    itemView.button_add.text = "ADDED"
+                }
+                false -> {
+                    itemView.button_add.text = "NOT"
+                    itemView.button_add.setOnClickListener {
+                        callback.onAddButtonClicked(stickerPack.identifier!!, stickerPack.name!!)
+                    }
+                }
             }
         }
 

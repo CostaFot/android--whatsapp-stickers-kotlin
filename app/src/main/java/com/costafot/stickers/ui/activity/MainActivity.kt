@@ -1,5 +1,6 @@
 package com.costafot.stickers.ui.activity
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.costafot.stickers.BuildConfig
 import com.costafot.stickers.R
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModelFactory
@@ -85,6 +87,30 @@ class MainActivity : BaseActivity() {
         mainViewModel.loadStickers()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (requestCode == ADD_PACK) {
+            if (resultCode == Activity.RESULT_CANCELED) {
+                if (intent != null) {
+                    val bundle = intent.extras
+                    if (bundle != null && bundle.containsKey(RESULT_STRING_EXTRA)) {
+                        val validationError: String? = bundle.getString(RESULT_STRING_EXTRA)
+                        if (validationError != null) {
+                            if (BuildConfig.DEBUG) {
+                                Toasty.error(this, validationError).show()
+                            }
+                            Timber.e("Validation failed:$validationError")
+                        }
+                    } else {
+                        Toasty.error(this, "Cancelled but no validation error given.").show()
+                    }
+                } else {
+                    Toasty.error(this, getString(R.string.add_pack_fail_prompt_update_whatsapp)).show()
+                }
+            }
+        }
+    }
+
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -133,5 +159,7 @@ class MainActivity : BaseActivity() {
         const val EXTRA_STICKER_PACK_DATA = "sticker_pack"
 
         const val ADD_PACK = 200
+
+        const val RESULT_STRING_EXTRA = "validation_error"
     }
 }
