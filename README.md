@@ -12,4 +12,6 @@ A version of the sample android app following (loosely):
 
 `Navigation AAC`
 
+`RxJava`
+
 
