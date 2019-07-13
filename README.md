@@ -1,5 +1,7 @@
 # WhatsApp Stickers in Kotlin
 
+Wanted to make a sticker app for fun an afternoon after work and this happened.
+
 A version of the sample android app following (loosely):
 
 `MVVM`
