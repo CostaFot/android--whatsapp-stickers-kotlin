@@ -64,6 +64,16 @@ class AppModule {
     }
 
     @Provides
+    fun providesApplicationContentResolver(application: Application): ContentResolver {
+        return application.contentResolver
+    }
+
+    @Provides
+    fun providesUriMatcher(): UriMatcher {
+        return UriMatcher(UriMatcher.NO_MATCH)
+    }
+
+    @Provides
     fun providesStickerProviderHelper(
         @Named(CONTENT_PROVIDER_AUTHORITY) providerAuthority: String,
         @Named(PACKAGE_NAME) packageName: String,
@@ -73,16 +83,6 @@ class AppModule {
             throw IllegalStateException("Your authority $providerAuthority or the content provider should start with your package name: $packageName")
         }
         return StickerProviderHelper(providerAuthority, contentResolver)
-    }
-
-    @Provides
-    fun providesApplicationContentResolver(application: Application): ContentResolver {
-        return application.contentResolver
-    }
-
-    @Provides
-    fun providesUriMatcher(): UriMatcher {
-        return UriMatcher(UriMatcher.NO_MATCH)
     }
 
     @Provides

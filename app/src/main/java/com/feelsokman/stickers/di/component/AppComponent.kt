@@ -4,7 +4,6 @@ import android.app.Application
 import com.feelsokman.stickers.StickerApplication
 import com.feelsokman.stickers.di.module.ActivityBuilderModule
 import com.feelsokman.stickers.di.module.AppModule
-import com.feelsokman.stickers.di.module.ContentProviderModule
 import com.feelsokman.stickers.di.module.UseCaseModule
 import dagger.BindsInstance
 import dagger.Component
@@ -18,7 +17,6 @@ import javax.inject.Singleton
         AndroidSupportInjectionModule::class,
         ActivityBuilderModule::class,
         AppModule::class,
-        ContentProviderModule::class,
         UseCaseModule::class
     ]
 )

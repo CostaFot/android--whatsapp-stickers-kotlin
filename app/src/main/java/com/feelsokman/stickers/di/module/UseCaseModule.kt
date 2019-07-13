@@ -3,6 +3,7 @@ package com.feelsokman.stickers.di.module
 import android.content.ContentResolver
 import android.content.pm.PackageManager
 import com.feelsokman.stickers.contentprovider.StickerProviderHelper
+import com.feelsokman.stickers.usecase.ContentFileParser
 import com.feelsokman.stickers.usecase.FetchStickerAssetUseCase
 import com.feelsokman.stickers.usecase.StickerPackLoaderUseCase
 import com.feelsokman.stickers.usecase.StickerPackValidator
@@ -15,6 +16,10 @@ import javax.inject.Named
 
 @Module
 class UseCaseModule {
+
+    @Provides
+    internal fun providesContentFileParser(): ContentFileParser =
+        ContentFileParser()
 
     @Provides
     internal fun providesStickerPackValidator(fetchStickerAssetUseCase: FetchStickerAssetUseCase): StickerPackValidator =
