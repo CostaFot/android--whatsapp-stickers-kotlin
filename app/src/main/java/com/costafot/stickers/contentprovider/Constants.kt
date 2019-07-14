@@ -21,3 +21,7 @@ const val STICKERS_CODE = 3
 const val STICKERS_ASSET = "stickers_asset"
 const val STICKERS_ASSET_CODE = 4
 const val STICKER_PACK_TRAY_ICON_CODE = 5
+const val CURSOR_CONTAINS_ZERO_TO_INFINITY_ITEMS = "vnd.android.cursor.dir/vnd"
+const val CURSOR_CONTAINS_SINGLE_ITEM = "vnd.android.cursor.item/vnd"
+const val IMAGE_WEBP = "image/webp"
+const val IMAGE_PNG = "image/png"

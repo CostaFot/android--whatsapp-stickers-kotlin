@@ -27,6 +27,9 @@ import io.reactivex.disposables.Disposable
 import java.util.ArrayList
 import java.util.HashSet
 
+/**
+ * Main class loading all sticker packs into the app.
+ */
 class StickerPackLoaderUseCase(
     private val scheduler: Scheduler,
     private val stickerProviderHelper: StickerProviderHelper,
@@ -53,15 +56,33 @@ class StickerPackLoaderUseCase(
     }
 
     private fun fetchStickerPacks(): ArrayList<StickerPack> {
-        var stickerPackList: ArrayList<StickerPack> = arrayListOf()
+        val stickerPackList: ArrayList<StickerPack> = arrayListOf()
         try {
             stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)?.use {
-                stickerPackList = fetchFromContentProvider(it)
+                stickerPackList.addAll(fetchFromContentProvider(it))
             }
         } catch (e: Exception) {
             throw Exception("could not fetch from content provider $stickerProviderHelper.providerAuthority, error ${e.localizedMessage}")
         }
 
+        checkUniqueIdentifiers(stickerPackList)
+
+        if (stickerPackList.isEmpty()) {
+            throw IllegalStateException("There should be at least one sticker pack in the app")
+        }
+        for (stickerPack in stickerPackList) {
+            val stickers = getStickersForPack(stickerPack)
+            stickerPack.stickers = stickers
+            stickerPackValidator.verifyStickerPackValidity(stickerPack)
+        }
+
+        for (stickerPack in stickerPackList) {
+            stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier!!)
+        }
+        return stickerPackList
+    }
+
+    private fun checkUniqueIdentifiers(stickerPackList: ArrayList<StickerPack>) {
         val identifierSet = HashSet<String>()
         for (stickerPack in stickerPackList) {
             if (identifierSet.contains(stickerPack.identifier)) {
@@ -70,20 +91,6 @@ class StickerPackLoaderUseCase(
                 identifierSet.add(stickerPack.identifier!!)
             }
         }
-        if (stickerPackList.isEmpty()) {
-            throw IllegalStateException("There should be at least one sticker pack in the app")
-        }
-        for (stickerPack in stickerPackList) {
-            val stickers = getStickersForPack(stickerPack)
-            stickerPack.resetStickers(stickers)
-            stickerPackValidator.verifyStickerPackValidity(stickerPack)
-        }
-
-        for (stickerPack in stickerPackList) {
-
-            stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier!!)
-        }
-        return stickerPackList
     }
 
     private fun getStickersForPack(stickerPack: StickerPack): List<Sticker> {
@@ -91,7 +98,7 @@ class StickerPackLoaderUseCase(
         for (sticker in stickers) {
             try {
                 val bytes: ByteArray =
-                    fetchStickerAssetUseCase.fetchStickerAsset(stickerPack.identifier!!, sticker.imageFileName!!)
+                    fetchStickerAssetUseCase.fetchStickerAsset(stickerPack.identifier, sticker.imageFileName!!)
                 if (bytes.isEmpty()) {
                     throw Exception("Asset file is empty, pack: " + stickerPack.name + ", sticker: " + sticker.imageFileName)
                 }
@@ -118,17 +125,17 @@ class StickerPackLoaderUseCase(
             val privacyPolicyWebsite = cursor.getString(cursor.getColumnIndexOrThrow(PRIVACY_POLICY_WEBSITE))
             val licenseAgreementWebsite = cursor.getString(cursor.getColumnIndexOrThrow(LICENSE_AGREEMENT_WEBSITE))
             val stickerPack = StickerPack(
-                identifier,
-                name,
-                publisher,
-                trayImage,
-                publisherEmail,
-                publisherWebsite,
-                privacyPolicyWebsite,
-                licenseAgreementWebsite
+                identifier = identifier,
+                name = name,
+                publisher = publisher,
+                trayImageFile = trayImage,
+                publisherEmail = publisherEmail,
+                publisherWebsite = publisherWebsite,
+                privacyPolicyWebsite = privacyPolicyWebsite,
+                licenseAgreementWebsite = licenseAgreementWebsite,
+                androidPlayStoreLink = androidPlayStoreLink,
+                iosAppStoreLink = iosAppLink
             )
-            stickerPack.androidPlayStoreLink = androidPlayStoreLink
-            stickerPack.iosAppStoreLink = iosAppLink
             stickerPackList.add(stickerPack)
         } while (cursor.moveToNext())
 
@@ -141,22 +148,20 @@ class StickerPackLoaderUseCase(
 
         val projection = arrayOf(STICKER_FILE_NAME_IN_QUERY, STICKER_FILE_EMOJI_IN_QUERY)
         val cursor = contentResolver.query(uri, projection, null, null, null)
-        val stickers = ArrayList<Sticker>()
+        val stickerList = ArrayList<Sticker>()
+
         if (cursor != null && cursor.count > 0) {
             cursor.moveToFirst()
             do {
                 val name = cursor.getString(cursor.getColumnIndexOrThrow(STICKER_FILE_NAME_IN_QUERY))
                 val emojisConcatenated = cursor.getString(cursor.getColumnIndexOrThrow(STICKER_FILE_EMOJI_IN_QUERY))
-                stickers.add(
-                    Sticker(
-                        name,
-                        listOf(*emojisConcatenated.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
-                    )
+                stickerList.add(
+                    Sticker(name, listOf(*emojisConcatenated.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
                 )
             } while (cursor.moveToNext())
         }
         cursor?.close()
-        return stickers
+        return stickerList
     }
 
     override fun stopAllBackgroundWork() {

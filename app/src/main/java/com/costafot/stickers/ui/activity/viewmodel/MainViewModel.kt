@@ -7,6 +7,7 @@ import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.ui.SingleLiveEvent
 import com.costafot.stickers.ui.activity.LaunchIntentCommand
+import com.costafot.stickers.usecase.ActionResolverUseCase
 import com.costafot.stickers.usecase.AddStickerPackActions
 import com.costafot.stickers.usecase.AddStickerPackActions.ADD_TO_BUSINESS
 import com.costafot.stickers.usecase.AddStickerPackActions.ADD_TO_CONSUMER
@@ -22,8 +23,8 @@ import timber.log.Timber
 
 class MainViewModel(
     private val stickerPackLoaderUseCase: StickerPackLoaderUseCase,
-    private val whiteListCheckUseCase: WhiteListCheckUseCase,
-    private val intentResolverUseCase: IntentResolverUseCase
+    private val intentResolverUseCase: IntentResolverUseCase,
+    private val actionResolverUseCase: ActionResolverUseCase
 ) : ViewModel() {
 
     val toastSingleLiveEvent = SingleLiveEvent<Int>()
@@ -51,7 +52,7 @@ class MainViewModel(
 
     fun tryToAddStickerPack(identifier: String, packName: String) {
 
-        whiteListCheckUseCase.resolveActionAddStickerPack(
+        actionResolverUseCase.resolveActionAddStickerPack(
             identifier,
             object : BaseDisposableUseCase.Callback<AddStickerPackActions> {
                 override fun onLoadingStarted() {
@@ -103,8 +104,9 @@ class MainViewModel(
     }
 
     override fun onCleared() {
+        // need to stop all background threads
         stickerPackLoaderUseCase.stopAllBackgroundWork()
-        whiteListCheckUseCase.stopAllBackgroundWork()
+        actionResolverUseCase.stopAllBackgroundWork()
         Timber.d("MainViewModel cleared")
         super.onCleared()
     }

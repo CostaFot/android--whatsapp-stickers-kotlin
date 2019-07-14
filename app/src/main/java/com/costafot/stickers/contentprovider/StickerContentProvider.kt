@@ -1,5 +1,6 @@
 package com.costafot.stickers.contentprovider
 
+import android.annotation.SuppressLint
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
@@ -49,7 +50,7 @@ class StickerContentProvider : ContentProvider() {
                 STICKERS_ASSET + "/" + stickerPack.identifier + "/" + stickerPack.trayImageFile,
                 STICKER_PACK_TRAY_ICON_CODE
             )
-            val stickersList = stickerPack.stickers ?: throw Exception("Stick list in stickerpack is null")
+            val stickersList = stickerPack.stickers ?: throw Exception("Stick list in sticker pack is null")
             for (sticker: Sticker in stickersList) {
                 uriMatcher.addURI(
                     stickerProviderHelper.providerAuthority,
@@ -164,11 +165,11 @@ class StickerContentProvider : ContentProvider() {
 
     override fun getType(uri: Uri): String? {
         return when (uriMatcher.match(uri)) {
-            METADATA_CODE -> "vnd.android.cursor.dir/vnd." + stickerProviderHelper.providerAuthority + "." + METADATA
-            METADATA_CODE_FOR_SINGLE_PACK -> "vnd.android.cursor.item/vnd." + stickerProviderHelper.providerAuthority + "." + METADATA
-            STICKERS_CODE -> "vnd.android.cursor.dir/vnd." + stickerProviderHelper.providerAuthority + "." + STICKERS
-            STICKERS_ASSET_CODE -> "image/webp"
-            STICKER_PACK_TRAY_ICON_CODE -> "image/png"
+            METADATA_CODE -> "$CURSOR_CONTAINS_ZERO_TO_INFINITY_ITEMS.${stickerProviderHelper.providerAuthority}.$METADATA"
+            METADATA_CODE_FOR_SINGLE_PACK -> "$CURSOR_CONTAINS_SINGLE_ITEM.${stickerProviderHelper.providerAuthority}.$METADATA"
+            STICKERS_CODE -> "$CURSOR_CONTAINS_ZERO_TO_INFINITY_ITEMS.${stickerProviderHelper.providerAuthority}.$STICKERS"
+            STICKERS_ASSET_CODE -> IMAGE_WEBP
+            STICKER_PACK_TRAY_ICON_CODE -> IMAGE_PNG
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
     }
@@ -212,6 +213,7 @@ class StickerContentProvider : ContentProvider() {
         return null
     }
 
+    @SuppressLint("LogNotTimber")
     private fun fetchFile(uri: Uri, assetManager: AssetManager, fileName: String, identifier: String): AssetFileDescriptor? {
         return try {
             assetManager.openFd("$identifier/$fileName")

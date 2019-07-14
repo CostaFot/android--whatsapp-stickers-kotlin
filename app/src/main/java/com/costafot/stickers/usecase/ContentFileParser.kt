@@ -2,7 +2,6 @@ package com.costafot.stickers.usecase
 
 import android.text.TextUtils
 import android.util.JsonReader
-import androidx.annotation.NonNull
 import com.costafot.stickers.contentprovider.model.Sticker
 import com.costafot.stickers.contentprovider.model.StickerPack
 import java.io.IOException
@@ -15,15 +14,13 @@ class ContentFileParser {
         const val LIMIT_EMOJI_COUNT = 2
     }
 
-    @NonNull
     @Throws(IOException::class, IllegalStateException::class)
-    fun parseStickerPacks(@NonNull contentsInputStream: InputStream): List<StickerPack> {
-        JsonReader(InputStreamReader(contentsInputStream)).use { reader -> return readStickerPacks(reader) }
+    fun parseStickerPacks(contentsInputStream: InputStream): List<StickerPack> {
+        JsonReader(InputStreamReader(contentsInputStream)).use { reader -> return readStickerPackList(reader) }
     }
 
-    @NonNull
     @Throws(IOException::class, IllegalStateException::class)
-    private fun readStickerPacks(reader: JsonReader): List<StickerPack> {
+    private fun readStickerPackList(reader: JsonReader): List<StickerPack> {
         val stickerPackList = ArrayList<StickerPack>()
         var androidPlayStoreLink: String? = null
         var iosAppStoreLink: String? = null
@@ -54,7 +51,6 @@ class ContentFileParser {
         return stickerPackList
     }
 
-    @NonNull
     @Throws(IOException::class, IllegalStateException::class)
     private fun readStickerPack(reader: JsonReader): StickerPack {
         reader.beginObject()
@@ -81,40 +77,43 @@ class ContentFileParser {
                 else -> reader.skipValue()
             }
         }
-        if (TextUtils.isEmpty(identifier)) {
-            throw IllegalStateException("identifier cannot be empty")
+
+        when (identifier.isNullOrBlank()) {
+            true -> throw IllegalStateException("identifier cannot be empty")
+            false -> {
+                if (identifier.contains("..") || identifier.contains("/")) {
+                    throw IllegalStateException("identifier should not contain .. or / to prevent directory traversal")
+                }
+            }
         }
-        if (TextUtils.isEmpty(name)) {
+
+        if (name.isNullOrBlank()) {
             throw IllegalStateException("name cannot be empty")
         }
-        if (TextUtils.isEmpty(publisher)) {
+        if (publisher.isNullOrBlank()) {
             throw IllegalStateException("publisher cannot be empty")
         }
-        if (TextUtils.isEmpty(trayImageFile)) {
+        if (trayImageFile.isNullOrBlank()) {
             throw IllegalStateException("tray_image_file cannot be empty")
         }
-        if (stickerList == null || stickerList.isEmpty()) {
+        if (stickerList.isNullOrEmpty()) {
             throw IllegalStateException("sticker list is empty")
         }
-        if (identifier!!.contains("..") || identifier.contains("/")) {
-            throw IllegalStateException("identifier should not contain .. or / to prevent directory traversal")
-        }
         reader.endObject()
-        val stickerPack = StickerPack(
-            identifier,
-            name!!,
-            publisher!!,
-            trayImageFile!!,
-            publisherEmail!!,
-            publisherWebsite!!,
-            privacyPolicyWebsite!!,
-            licenseAgreementWebsite!!
+
+        return StickerPack(
+            identifier = identifier,
+            name = name,
+            publisher = publisher,
+            trayImageFile = trayImageFile,
+            publisherEmail = publisherEmail,
+            publisherWebsite = publisherWebsite,
+            privacyPolicyWebsite = privacyPolicyWebsite,
+            licenseAgreementWebsite = licenseAgreementWebsite,
+            stickers = stickerList
         )
-        stickerPack.resetStickers(stickerList)
-        return stickerPack
     }
 
-    @NonNull
     @Throws(IOException::class, IllegalStateException::class)
     private fun readStickers(reader: JsonReader): List<Sticker> {
         reader.beginArray()

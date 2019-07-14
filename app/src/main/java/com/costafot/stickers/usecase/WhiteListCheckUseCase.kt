@@ -4,22 +4,11 @@ import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.net.Uri
 import com.costafot.stickers.contentprovider.StickerProviderHelper
-import com.costafot.stickers.usecase.error.DataSourceError
-import com.costafot.stickers.usecase.error.DataSourceErrorKind
-import io.reactivex.Scheduler
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 
 class WhiteListCheckUseCase(
-    private val scheduler: Scheduler,
     private val stickerProviderHelper: StickerProviderHelper,
     private val packageManager: PackageManager
-) : BaseDisposableUseCase() {
-
-    override val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    override var latestDisposable: Disposable? = null
+) {
 
     companion object {
         const val AUTHORITY_QUERY_PARAM = "authority"
@@ -76,64 +65,19 @@ class WhiteListCheckUseCase(
         }
     }
 
-    private fun isWhatsAppConsumerAppInstalled(): Boolean {
+    fun isWhatsAppConsumerAppInstalled(): Boolean {
         return isPackageInstalled(CONSUMER_WHATSAPP_PACKAGE_NAME, packageManager)
     }
 
-    private fun isWhatsAppSmbAppInstalled(): Boolean {
+    fun isWhatsAppSmbAppInstalled(): Boolean {
         return isPackageInstalled(SMB_WHATSAPP_PACKAGE_NAME, packageManager)
     }
 
-    private fun isStickerPackWhitelistedInWhatsAppConsumer(identifier: String): Boolean {
+    fun isStickerPackWhitelistedInWhatsAppConsumer(identifier: String): Boolean {
         return isWhitelistedFromProvider(identifier, CONSUMER_WHATSAPP_PACKAGE_NAME)
     }
 
-    private fun isStickerPackWhitelistedInWhatsAppSmb(identifier: String): Boolean {
+    fun isStickerPackWhitelistedInWhatsAppSmb(identifier: String): Boolean {
         return isWhitelistedFromProvider(identifier, SMB_WHATSAPP_PACKAGE_NAME)
     }
-
-    fun resolveActionAddStickerPack(identifier: String, callback: Callback<AddStickerPackActions>) {
-        latestDisposable?.dispose()
-        latestDisposable =
-            Single.fromCallable { resolve(identifier) }
-                .subscribeOn(scheduler)
-                .doOnSubscribe { compositeDisposable.add(it) }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { action -> callback.onSuccess(action) },
-                    { error -> callback.onError(DataSourceError(error.localizedMessage, DataSourceErrorKind.UNEXPECTED)) }
-                )
-    }
-
-    private fun resolve(identifier: String): AddStickerPackActions {
-        // if neither WhatsApp Consumer or WhatsApp Business is installed, then tell user to install the apps.
-        if (!isWhatsAppConsumerAppInstalled() && !isWhatsAppSmbAppInstalled()) {
-            return AddStickerPackActions.APPS_NOT_FOUND
-        }
-        val stickerPackWhitelistedInWhatsAppConsumer = isStickerPackWhitelistedInWhatsAppConsumer(identifier)
-        val stickerPackWhitelistedInWhatsAppSmb = isStickerPackWhitelistedInWhatsAppSmb(identifier)
-
-        return if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-            // ask users which app to add the pack to.
-            AddStickerPackActions.ASK_USER_WHICH_APP
-        } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
-            AddStickerPackActions.ADD_TO_CONSUMER
-        } else if (!stickerPackWhitelistedInWhatsAppSmb) {
-            AddStickerPackActions.ADD_TO_BUSINESS
-        } else {
-            AddStickerPackActions.PROMPT_UPDATE_CAUSE_FAILURE
-        }
-    }
-
-    override fun stopAllBackgroundWork() {
-        compositeDisposable.clear()
-    }
-}
-
-enum class AddStickerPackActions {
-    APPS_NOT_FOUND,
-    ASK_USER_WHICH_APP,
-    ADD_TO_CONSUMER,
-    ADD_TO_BUSINESS,
-    PROMPT_UPDATE_CAUSE_FAILURE
 }
