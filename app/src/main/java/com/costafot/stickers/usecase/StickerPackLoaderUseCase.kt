@@ -24,6 +24,8 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.ArrayList
 import java.util.HashSet
 
@@ -41,6 +43,12 @@ class StickerPackLoaderUseCase(
 
     override val compositeDisposable: CompositeDisposable = CompositeDisposable()
     override var latestDisposable: Disposable? = null
+
+    suspend fun loadStickerPacksSuspended(): ArrayList<StickerPack> {
+        return withContext(Dispatchers.Default) {
+            fetchStickerPacks()
+        }
+    }
 
     fun loadStickerPacks(callback: Callback<ArrayList<StickerPack>>) {
         latestDisposable?.dispose()

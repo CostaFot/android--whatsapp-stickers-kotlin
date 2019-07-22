@@ -3,6 +3,7 @@ package com.costafot.stickers.ui.activity.viewmodel
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.ui.SingleLiveEvent
@@ -19,6 +20,9 @@ import com.costafot.stickers.usecase.IntentResolverUseCase
 import com.costafot.stickers.usecase.StickerPackLoaderUseCase
 import com.costafot.stickers.usecase.WhiteListCheckUseCase
 import com.costafot.stickers.usecase.error.DataSourceError
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainViewModel(
@@ -35,9 +39,36 @@ class MainViewModel(
 
     var currentDetailsPosition = 0
 
-    fun loadStickers() {
+    fun doSomething() {
+        Timber.d("Before coroutine")
+        viewModelScope.launch {
+            Timber.d("Start coroutine")
+            val error = bg()
+            Timber.d("End of suspend function")
+            errorMessage.value = error
+        }
 
-        stickerPackLoaderUseCase.loadStickerPacks(object : BaseDisposableUseCase.Callback<ArrayList<StickerPack>> {
+        Timber.d("Outside coroutine")
+    }
+
+    suspend fun bg(): String {
+        return withContext(Dispatchers.Default) {
+            Timber.d("Inside the suspend function")
+            "balls"
+        }
+    }
+
+    fun loadStickers() {
+        viewModelScope.launch {
+            try {
+                stickerData.value = stickerPackLoaderUseCase.loadStickerPacksSuspended()
+                updateDetailsStickerPack(currentDetailsPosition)
+            } catch (e: Exception) {
+                errorMessage.value = e.localizedMessage
+            }
+        }
+
+        /*stickerPackLoaderUseCase.loadStickerPacks(object : BaseDisposableUseCase.Callback<ArrayList<StickerPack>> {
             override fun onLoadingStarted() {
                 // TODO
             }
@@ -50,7 +81,7 @@ class MainViewModel(
             override fun onError(error: DataSourceError) {
                 errorMessage.value = error.errorMessage
             }
-        })
+        })*/
     }
 
     fun tryToAddStickerPack(identifier: String, packName: String) {
