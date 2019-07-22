@@ -2,6 +2,7 @@ package com.costafot.stickers.ui.fragments.details
 
 import android.content.Context
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
@@ -57,6 +59,28 @@ class DetailsFragment : BaseFragment() {
 
         if (!stickerPack.stickers.isNullOrEmpty()) {
             detailsAdapter.submitList(stickerPack.stickers)
+
+            textView_detail_stickerpack_name.text = stickerPack.name
+            val path = "file:///android_asset/${stickerPack.identifier}/${stickerPack.trayImageFile}"
+            val ff = Uri.parse(path)
+            Glide.with(this)
+                .load(ff)
+                .placeholder(R.drawable.ic_check_white_48dp)
+                .error(R.drawable.ic_error_outline_white_48dp)
+                .into(imageView_details_stickerpack_tray)
+
+            when (stickerPack.isWhitelisted) {
+                true -> {
+                    button_details_add_stickerpack.text = "ADDED"
+                    button_details_add_stickerpack.setOnClickListener {}
+                }
+                false -> {
+                    button_details_add_stickerpack.text = "NOT"
+                    button_details_add_stickerpack.setOnClickListener {
+                        activityViewModel.tryToAddStickerPack(stickerPack.identifier, stickerPack.name!!)
+                    }
+                }
+            }
         }
     }
 }

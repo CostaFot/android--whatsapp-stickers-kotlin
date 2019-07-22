@@ -104,6 +104,7 @@ dependencies {
     implementation rootProject.ext.dependencies.recyclerviewX
     implementation rootProject.ext.dependencies.annotation
     implementation rootProject.ext.dependencies.fragmentKtx
+    implementation rootProject.ext.dependencies.viewmodelKtx
 
     // Lifecycle
     implementation rootProject.ext.dependencies.lifecycle
@@ -120,6 +121,10 @@ dependencies {
     // Rx
     implementation rootProject.ext.dependencies.rxJava2
     implementation rootProject.ext.dependencies.rxAndroid
+
+    // Coroutines
+    implementation rootProject.ext.dependencies.coroutinesCore
+    implementation rootProject.ext.dependencies.coroutinesAndroid
 
     // Dependency Injection
     implementation rootProject.ext.dependencies.dagger

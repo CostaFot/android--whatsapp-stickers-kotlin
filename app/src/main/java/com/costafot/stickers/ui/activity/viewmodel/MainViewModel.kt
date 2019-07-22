@@ -33,6 +33,8 @@ class MainViewModel(
     val detailsStickerPackData = MutableLiveData<StickerPack>()
     val errorMessage = SingleLiveEvent<String>()
 
+    var currentDetailsPosition = 0
+
     fun loadStickers() {
 
         stickerPackLoaderUseCase.loadStickerPacks(object : BaseDisposableUseCase.Callback<ArrayList<StickerPack>> {
@@ -41,7 +43,8 @@ class MainViewModel(
             }
 
             override fun onSuccess(result: ArrayList<StickerPack>) {
-                stickerData.postValue(result)
+                stickerData.value = result
+                updateDetailsStickerPack(currentDetailsPosition)
             }
 
             override fun onError(error: DataSourceError) {
@@ -100,7 +103,8 @@ class MainViewModel(
     }
 
     fun updateDetailsStickerPack(position: Int) {
-        detailsStickerPackData.postValue(stickerData.value?.get(position))
+        currentDetailsPosition = position
+        detailsStickerPackData.postValue(stickerData.value?.get(currentDetailsPosition))
     }
 
     override fun onCleared() {
