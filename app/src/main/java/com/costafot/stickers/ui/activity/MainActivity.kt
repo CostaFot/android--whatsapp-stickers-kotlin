@@ -44,9 +44,7 @@ class MainActivity : BaseActivity() {
             Toasty.error(this, it).show()
         })
 
-        mainViewModel.toastSingleLiveEvent.observe(this, Observer {
-            Toasty.error(this, getString(it)).show()
-        })
+        mainViewModel.toastSingleLiveEvent.observe(this, Observer(this@MainActivity::toast))
 
         mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer {
             when (it) {
@@ -58,6 +56,10 @@ class MainActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    fun toast(resourceId: Int) {
+        Toasty.error(this, getString(resourceId)).show()
     }
 
     // Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
