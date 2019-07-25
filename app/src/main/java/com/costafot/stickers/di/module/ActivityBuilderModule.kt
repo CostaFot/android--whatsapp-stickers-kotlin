@@ -13,5 +13,5 @@ abstract class ActivityBuilderModule {
     abstract fun mainActivity(): MainActivity
 
     @ContributesAndroidInjector
-    abstract fun stickeStickerContentProvider(): StickerContentProvider
+    abstract fun stickerStickerContentProvider(): StickerContentProvider
 }

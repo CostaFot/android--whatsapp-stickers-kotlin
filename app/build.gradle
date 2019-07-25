@@ -118,10 +118,6 @@ dependencies {
     implementation rootProject.ext.dependencies.navigationFragments
     implementation rootProject.ext.dependencies.navigationUI
 
-    // Rx
-    implementation rootProject.ext.dependencies.rxJava2
-    implementation rootProject.ext.dependencies.rxAndroid
-
     // Coroutines
     implementation rootProject.ext.dependencies.coroutinesCore
     implementation rootProject.ext.dependencies.coroutinesAndroid

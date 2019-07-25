@@ -47,7 +47,7 @@ class StickerPackLoaderUseCase(
                 stickerPackList.addAll(fetchFromContentProvider(it))
             }
         } catch (e: Exception) {
-            throw Exception("could not fetch from content provider $stickerProviderHelper.providerAuthority, error ${e.localizedMessage}")
+            throw Exception("Could not fetch from content provider $stickerProviderHelper.providerAuthority, error ${e.localizedMessage}")
         }
 
         checkUniqueIdentifiers(stickerPackList)

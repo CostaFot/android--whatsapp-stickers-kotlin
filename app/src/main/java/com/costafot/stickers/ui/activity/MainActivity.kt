@@ -1,7 +1,6 @@
 package com.costafot.stickers.ui.activity
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -41,12 +40,7 @@ class MainActivity : BaseActivity() {
 
         setupToolbar()
 
-        mainViewModel.errorMessage.observe(this, Observer {
-            Toasty.error(this, it).show()
-        })
-
         mainViewModel.toastSingleLiveEvent.observe(this, Observer(this@MainActivity::showErrorToast))
-
         mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer(this@MainActivity::handleLaunchIntentCommand))
     }
 
@@ -71,17 +65,17 @@ class MainActivity : BaseActivity() {
     // Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
     private fun launchIntentToAddPackToChooser(intent: Intent) {
         try {
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), ADD_PACK)
-        } catch (e: ActivityNotFoundException) {
-            Toasty.error(this, getString(R.string.add_pack_fail_prompt_update_whatsapp)).show()
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), REQUEST_CODE_ADD_PACK)
+        } catch (e: Throwable) {
+            showErrorToast(ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
         }
     }
 
     private fun launchIntentToAddPackToSpecificPackage(intent: Intent) {
         try {
-            startActivityForResult(intent, ADD_PACK)
-        } catch (e: ActivityNotFoundException) {
-            Toasty.error(this, getString(R.string.add_pack_fail_prompt_update_whatsapp)).show()
+            startActivityForResult(intent, REQUEST_CODE_ADD_PACK)
+        } catch (e: Throwable) {
+            showErrorToast(ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
         }
     }
 
@@ -92,7 +86,7 @@ class MainActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
-        if (requestCode == ADD_PACK) {
+        if (requestCode == REQUEST_CODE_ADD_PACK) {
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (intent != null) {
                     val bundle = intent.extras
@@ -105,10 +99,10 @@ class MainActivity : BaseActivity() {
                             Timber.e("Validation failed:$validationError")
                         }
                     } else {
-                        Toasty.error(this, "Cancelled but no validation error given.").show()
+                        showErrorToast(ToastMessage(message = "Cancelled but no validation error given."))
                     }
                 } else {
-                    Toasty.error(this, getString(R.string.add_pack_fail_prompt_update_whatsapp)).show()
+                    showErrorToast(ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
                 }
             }
         }
@@ -149,20 +143,7 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        const val EXTRA_STICKER_PACK_ID = "sticker_pack_id"
-        const val EXTRA_STICKER_PACK_AUTHORITY = "sticker_pack_authority"
-        const val EXTRA_STICKER_PACK_NAME = "sticker_pack_name"
-
-        const val EXTRA_STICKER_PACK_WEBSITE = "sticker_pack_website"
-        const val EXTRA_STICKER_PACK_EMAIL = "sticker_pack_email"
-        const val EXTRA_STICKER_PACK_PRIVACY_POLICY = "sticker_pack_privacy_policy"
-        const val EXTRA_STICKER_PACK_LICENSE_AGREEMENT = "sticker_pack_license_agreement"
-        const val EXTRA_STICKER_PACK_TRAY_ICON = "sticker_pack_tray_icon"
-        const val EXTRA_SHOW_UP_BUTTON = "show_up_button"
-        const val EXTRA_STICKER_PACK_DATA = "sticker_pack"
-
-        const val ADD_PACK = 200
-
+        const val REQUEST_CODE_ADD_PACK = 200
         const val RESULT_STRING_EXTRA = "validation_error"
     }
 }

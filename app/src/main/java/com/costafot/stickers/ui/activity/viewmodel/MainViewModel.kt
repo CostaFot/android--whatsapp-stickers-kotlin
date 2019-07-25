@@ -29,7 +29,6 @@ class MainViewModel(
     val launchIntentSingleLiveEvent = SingleLiveEvent<LaunchIntentCommand>()
     val stickerData = MutableLiveData<ArrayList<StickerPack>>()
     val detailsStickerPackData = MutableLiveData<StickerPack>()
-    val errorMessage = SingleLiveEvent<String>()
 
     private var currentDetailsPosition = 0
 

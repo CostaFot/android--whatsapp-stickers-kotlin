@@ -15,7 +15,6 @@ import com.google.gson.GsonBuilder
 import com.squareup.otto.Bus
 import dagger.Module
 import dagger.Provides
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Named
 import javax.inject.Singleton
@@ -99,9 +98,6 @@ class AppModule {
     fun providesGson(): Gson {
         return GsonBuilder().setPrettyPrinting().create()
     }
-
-    @Provides
-    internal fun providesExecutionScheduler() = Schedulers.io()
 
     @Provides
     internal fun providesDefaultDispatcher() = Dispatchers.Default

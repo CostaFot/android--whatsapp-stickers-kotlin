@@ -1,16 +1,5 @@
 package com.costafot.stickers.extensions
 
-import com.costafot.stickers.usecase.BaseDisposableUseCase
-import io.reactivex.disposables.CompositeDisposable
-
-fun CompositeDisposable.isEmpty(): Boolean {
-    return size() == 0
-}
-
-fun BaseDisposableUseCase.hasNoMemoryLeaks(): Boolean {
-    return compositeDisposable.isEmpty()
-}
-
 fun <T1 : Any, T2 : Any, R : Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2) -> R?): R? {
     return if (p1 != null && p2 != null) block(p1, p2) else null
 }

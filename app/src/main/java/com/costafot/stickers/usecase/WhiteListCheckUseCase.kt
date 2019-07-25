@@ -9,7 +9,6 @@ class WhiteListCheckUseCase(
     private val stickerProviderHelper: StickerProviderHelper,
     private val packageManager: PackageManager
 ) {
-
     companion object {
         const val AUTHORITY_QUERY_PARAM = "authority"
         const val IDENTIFIER_QUERY_PARAM = "identifier"
