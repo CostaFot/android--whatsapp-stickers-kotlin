@@ -16,6 +16,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.costafot.stickers.BuildConfig
 import com.costafot.stickers.R
+import com.costafot.stickers.model.ToastMessage
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModelFactory
 import com.costafot.stickers.ui.base.BaseActivity
@@ -44,27 +45,31 @@ class MainActivity : BaseActivity() {
             Toasty.error(this, it).show()
         })
 
-        mainViewModel.toastSingleLiveEvent.observe(this, Observer(this@MainActivity::toast))
+        mainViewModel.toastSingleLiveEvent.observe(this, Observer(this@MainActivity::showErrorToast))
 
-        mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer {
-            when (it) {
-                is LaunchIntentCommand.Chooser -> {
-                    launchIntentToAddPackToChooser(it.identifier, it.packName)
-                }
-                is LaunchIntentCommand.Specific -> {
-                    launchIntentToAddPackToSpecificPackage(it.identifier, it.packName, it.specificPackage)
-                }
-            }
-        })
+        mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer(this@MainActivity::handleLaunchIntentCommand))
     }
 
-    fun toast(resourceId: Int) {
-        Toasty.error(this, getString(resourceId)).show()
+    private fun handleLaunchIntentCommand(launchIntentCommand: LaunchIntentCommand) {
+        when (launchIntentCommand) {
+            is LaunchIntentCommand.Chooser -> {
+                launchIntentToAddPackToChooser(launchIntentCommand.intent)
+            }
+            is LaunchIntentCommand.Specific -> {
+                launchIntentToAddPackToSpecificPackage(launchIntentCommand.intent)
+            }
+        }
+    }
+
+    private fun showErrorToast(toastMessage: ToastMessage) {
+        when (toastMessage.hasResource()) {
+            true -> Toasty.error(this, getString(toastMessage.resourceId)).show()
+            else -> Toasty.error(this, toastMessage.message.toString()).show()
+        }
     }
 
     // Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
-    private fun launchIntentToAddPackToChooser(identifier: String, stickerPackName: String) {
-        val intent = mainViewModel.getIntentToAddStickerPack(identifier, stickerPackName)
+    private fun launchIntentToAddPackToChooser(intent: Intent) {
         try {
             startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), ADD_PACK)
         } catch (e: ActivityNotFoundException) {
@@ -72,11 +77,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun launchIntentToAddPackToSpecificPackage(identifier: String, stickerPackName: String, whatsappPackageName: String) {
-        val intent = mainViewModel.getIntentToAddStickerPack(identifier, stickerPackName)
-        intent.apply {
-            setPackage(whatsappPackageName)
-        }
+    private fun launchIntentToAddPackToSpecificPackage(intent: Intent) {
         try {
             startActivityForResult(intent, ADD_PACK)
         } catch (e: ActivityNotFoundException) {

@@ -17,14 +17,7 @@ import com.costafot.stickers.contentprovider.STICKER_PACK_PUBLISHER_IN_QUERY
 import com.costafot.stickers.contentprovider.StickerProviderHelper
 import com.costafot.stickers.contentprovider.model.Sticker
 import com.costafot.stickers.contentprovider.model.StickerPack
-import com.costafot.stickers.usecase.error.DataSourceError
-import com.costafot.stickers.usecase.error.DataSourceErrorKind
-import io.reactivex.Scheduler
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
 import java.util.HashSet
@@ -33,34 +26,18 @@ import java.util.HashSet
  * Main class loading all sticker packs into the app.
  */
 class StickerPackLoaderUseCase(
-    private val scheduler: Scheduler,
+    private val dispatcher: CoroutineDispatcher,
     private val stickerProviderHelper: StickerProviderHelper,
     private val fetchStickerAssetUseCase: FetchStickerAssetUseCase,
     private val uriResolverUseCase: UriResolverUseCase,
     private val stickerPackValidator: StickerPackValidator,
     private val whiteListCheckUseCase: WhiteListCheckUseCase
-) : BaseDisposableUseCase() {
-
-    override val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    override var latestDisposable: Disposable? = null
+) {
 
     suspend fun loadStickerPacksSuspended(): ArrayList<StickerPack> {
-        return withContext(Dispatchers.Default) {
+        return withContext(dispatcher) {
             fetchStickerPacks()
         }
-    }
-
-    fun loadStickerPacks(callback: Callback<ArrayList<StickerPack>>) {
-        latestDisposable?.dispose()
-        latestDisposable =
-            Single.fromCallable { fetchStickerPacks() }
-                .subscribeOn(scheduler)
-                .doOnSubscribe { compositeDisposable.add(it) }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { stickerPacks -> callback.onSuccess(stickerPacks) },
-                    { error -> callback.onError(DataSourceError(error.localizedMessage, DataSourceErrorKind.UNEXPECTED)) }
-                )
     }
 
     private fun fetchStickerPacks(): ArrayList<StickerPack> {
@@ -170,9 +147,5 @@ class StickerPackLoaderUseCase(
         }
         cursor?.close()
         return stickerList
-    }
-
-    override fun stopAllBackgroundWork() {
-        compositeDisposable.clear()
     }
 }

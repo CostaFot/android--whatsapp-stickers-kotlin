@@ -13,7 +13,7 @@ import com.costafot.stickers.usecase.UriResolverUseCase
 import com.costafot.stickers.usecase.WhiteListCheckUseCase
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Scheduler
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Named
 
 @Module
@@ -29,14 +29,14 @@ class UseCaseModule {
 
     @Provides
     internal fun providesStickerPackLoaderUseCase(
-        scheduler: Scheduler,
+        dispatcher: CoroutineDispatcher,
         stickerProviderHelper: StickerProviderHelper,
         fetchStickerAssetUseCase: FetchStickerAssetUseCase,
         uriResolverUseCase: UriResolverUseCase,
         stickerPackValidator: StickerPackValidator,
         whiteListCheckUseCase: WhiteListCheckUseCase
     ): StickerPackLoaderUseCase = StickerPackLoaderUseCase(
-        scheduler,
+        dispatcher,
         stickerProviderHelper,
         fetchStickerAssetUseCase,
         uriResolverUseCase,
@@ -67,7 +67,7 @@ class UseCaseModule {
 
     @Provides
     internal fun providesActionResolverUseCase(
-        scheduler: Scheduler,
+        dispatcher: CoroutineDispatcher,
         whiteListCheckUseCase: WhiteListCheckUseCase
-    ): ActionResolverUseCase = ActionResolverUseCase(scheduler, whiteListCheckUseCase)
+    ): ActionResolverUseCase = ActionResolverUseCase(dispatcher, whiteListCheckUseCase)
 }
