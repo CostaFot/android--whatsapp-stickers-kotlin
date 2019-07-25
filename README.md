@@ -9,13 +9,13 @@ Wanted to make a sticker app for fun an afternoon after work and this happened.
 
 A version of the sample android app with added goodies:
 
-- MVVM
+- `MVVM`
 
-- Dagger2-android
+- `Dagger2-android`
 
-- Navigation AAC
+- `Navigation AAC`
 
-- Kotlin coroutines
+- `Kotlin coroutines`
 
 
 You are free to use this repo for your own project with proper attribution.
