@@ -11,7 +11,7 @@ A version of the sample android app with added goodies:
 
 - MVVM
 
-- Dagger2-android for dependency injection
+- Dagger2-android
 
 - Navigation AAC
 
