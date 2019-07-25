@@ -23,5 +23,5 @@ You are free to use this repo for your own project with proper attribution.
 If you do use it, shoot me a message so we can showcase your app here if you want :)
 
 
-## Licence
-[Licence file](https://github.com/CostaFot/android--whatsapp-stickers-kotlin/blob/master/LICENSE)
+## [Licence](https://github.com/CostaFot/android--whatsapp-stickers-kotlin/blob/master/LICENSE)
+
