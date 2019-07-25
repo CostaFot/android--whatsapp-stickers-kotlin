@@ -3,12 +3,12 @@
 ## All rights reserved to WhatsApp. You can find the original sample app here:
 https://github.com/WhatsApp/stickers
 
-## Work in progress, quite a few things *TODO*.
+## Work in progress but still fully functional. Includes two copies of the sticker pack provided by Whatsapp for experimentation.
 
 
 Wanted to make a sticker app for fun an afternoon after work and this happened.
 
-A version of the sample android app following (loosely):
+A version of the sample android app with added goodies:
 
 - MVVM
 
@@ -25,4 +25,4 @@ If you do use it, shoot me a message so we can showcase your app here if you wan
 
 
 ## Licence
-[Licence file here](https://github.com/CostaFot/android--whatsapp-stickers-kotlin/blob/master/LICENSE)
+[Licence file](https://github.com/CostaFot/android--whatsapp-stickers-kotlin/blob/master/LICENSE)
