@@ -3,7 +3,8 @@
 ## All rights reserved to WhatsApp. You can find the original sample app here:
 https://github.com/WhatsApp/stickers
 
-## Work in progress but still fully functional. Includes two copies of the sticker pack provided by Whatsapp for experimentation.
+## Work in progress but still fully functional. 
+## Includes two copies of the sticker pack provided by Whatsapp for experimentation.
 
 
 Wanted to make a sticker app for fun an afternoon after work and this happened.
