@@ -12,11 +12,11 @@ A version of the sample android app following (loosely):
 
 - MVVM
 
-- Dagger2-android for dependency injection.
+- Dagger2-android for dependency injection
 
 - Navigation AAC
 
-- RxJava
+- Kotlin coroutines
 
 
 You are free to use this repo for your own project with proper attribution.
