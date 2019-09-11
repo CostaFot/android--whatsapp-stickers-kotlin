@@ -46,9 +46,7 @@ class HostFragment : BaseFragment(), AdapterParent.Callback {
 
         setupAdapter(view)
 
-        activityViewModel.stickerData.observe(viewLifecycleOwner, Observer { stickerPackList ->
-            onResult(stickerPackList)
-        })
+        activityViewModel.stickerData.observe(viewLifecycleOwner, Observer(this::onResult))
     }
 
     private fun onResult(stickerPackList: List<StickerPack>?) {

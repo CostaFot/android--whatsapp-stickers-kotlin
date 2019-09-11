@@ -104,7 +104,6 @@ dependencies {
     implementation rootProject.ext.dependencies.recyclerviewX
     implementation rootProject.ext.dependencies.annotation
     implementation rootProject.ext.dependencies.fragmentKtx
-    implementation rootProject.ext.dependencies.viewmodelKtx
 
     // Lifecycle
     implementation rootProject.ext.dependencies.lifecycle
