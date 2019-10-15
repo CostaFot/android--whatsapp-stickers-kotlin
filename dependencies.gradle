@@ -46,8 +46,8 @@ allprojects {
                 viewmodelKtx          : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha02',
 
                 // *** Arch-component Navigation
-                navigationFragments   : 'androidx.navigation:navigation-fragment-ktx:2.1.0-alpha06',
-                navigationUI          : 'androidx.navigation:navigation-ui-ktx:2.1.0-alpha06',
+                navigationFragments   : 'androidx.navigation:navigation-fragment-ktx:2.2.0-beta01',
+                navigationUI          : 'androidx.navigation:navigation-ui-ktx:2.2.0-beta01',
                 // *** Dependency Injection
                 dagger                : 'com.google.dagger:dagger:2.23.2',
                 daggerCompiler        : 'com.google.dagger:dagger-compiler:2.23.2',
@@ -81,6 +81,10 @@ allprojects {
                 // *** Imaging
                 glide                 : 'com.github.bumptech.glide:glide:4.9.0',
                 glideCompiler         : 'com.github.bumptech.glide:compiler:4.9.0',
+                fresco                : 'com.facebook.fresco:fresco:2.0.0',
+                frescoWebP            : 'com.facebook.fresco:webpsupport:2.0.0',
+                frescoAnimatedWebP    : 'com.facebook.fresco:animated-webp:2.0.0',
+                frescoAnimatedBase    : 'com.facebook.fresco:animated-base:2.0.0',
                 // *** Event broadcasting
                 otto                  : 'com.squareup:otto:1.3.8',
                 // *** Network Watcher
@@ -103,7 +107,7 @@ allprojects {
                 flashbar              : 'com.andrognito.flashbar:flashbar:1.0.3',
                 bubbleNavigation      : 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7',
                 materialEditText      : 'com.github.florent37:materialtextfield:1.0.7',
-                shimmer               : 'com.facebook.shimmer:shimmer:0.4.0@aar',
+                shimmer               : 'com.facebook.shimmer:shimmer:0.5.0',
                 // *** Animations
                 animations1           : 'androidx.core:core:1.2.0-alpha02',
                 animations2           : 'com.daimajia.easing:library:2.1@aar',

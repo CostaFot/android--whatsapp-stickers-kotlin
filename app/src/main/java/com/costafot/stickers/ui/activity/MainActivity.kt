@@ -92,11 +92,11 @@ class MainActivity : BaseActivity() {
                     val bundle = intent.extras
                     if (bundle != null && bundle.containsKey(RESULT_STRING_EXTRA)) {
                         val validationError: String? = bundle.getString(RESULT_STRING_EXTRA)
-                        if (validationError != null) {
+                        validationError?.let {
                             if (BuildConfig.DEBUG) {
-                                Toasty.error(this, validationError).show()
+                                Toasty.error(this, it).show()
                             }
-                            Timber.e("Validation failed:$validationError")
+                            Timber.e("Validation failed. Error: $validationError")
                         }
                     } else {
                         showErrorToast(ToastMessage(message = "Cancelled but no validation error given."))

@@ -66,6 +66,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     testOptions {
         unitTests {
             includeAndroidResources = true
@@ -142,6 +146,12 @@ dependencies {
     implementation rootProject.ext.dependencies.glide
     kapt rootProject.ext.dependencies.glideCompiler
 
+    // For WebP support, including animated WebP
+    implementation rootProject.ext.dependencies.fresco
+    implementation rootProject.ext.dependencies.frescoWebP
+    implementation rootProject.ext.dependencies.frescoAnimatedWebP
+    implementation rootProject.ext.dependencies.frescoAnimatedBase
+
     // Gif
     implementation rootProject.ext.dependencies.gif
 
@@ -183,12 +193,4 @@ dependencies {
     androidTestImplementation rootProject.ext.testDependencies.kakaoUiTesting
 
     debugImplementation rootProject.ext.testDependencies.fragmentScenario
-
-    implementation 'com.facebook.fresco:fresco:2.0.0'
-
-    // For WebP support, including animated WebP
-    implementation 'com.facebook.fresco:animated-webp:2.0.0'
-    implementation 'com.facebook.fresco:webpsupport:2.0.0'
-    implementation 'com.facebook.fresco:animated-base:2.0.0'
-
 }
