@@ -125,6 +125,19 @@ dependencies {
     implementation rootProject.ext.dependencies.coroutinesCore
     implementation rootProject.ext.dependencies.coroutinesAndroid
 
+    implementation rootProject.ext.dependencies.gson
+    implementation rootProject.ext.dependencies.okHttp3
+    implementation rootProject.ext.dependencies.loggingInterceptor
+    implementation(rootProject.ext.dependencies.retrofit2) {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    implementation(rootProject.ext.dependencies.retrofit2GsonConverter) {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    implementation(rootProject.ext.dependencies.retrofit2RxJava2) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+    }
+
     // Dependency Injection
     implementation rootProject.ext.dependencies.dagger
     kapt rootProject.ext.dependencies.daggerCompiler
@@ -155,9 +168,6 @@ dependencies {
     // Gif
     implementation rootProject.ext.dependencies.gif
 
-    // Gson
-    implementation rootProject.ext.dependencies.gson
-
     // Animations
     implementation rootProject.ext.dependencies.animations1
     implementation rootProject.ext.dependencies.animations2
@@ -184,6 +194,7 @@ dependencies {
     testImplementation rootProject.ext.testDependencies.rules
     testImplementation rootProject.ext.testDependencies.truth
     testImplementation rootProject.ext.testDependencies.kluent
+    testImplementation rootProject.ext.testDependencies.coroutineTest
 
     androidTestImplementation rootProject.ext.testDependencies.jUnit
     androidTestImplementation rootProject.ext.testDependencies.jUnitKotlin

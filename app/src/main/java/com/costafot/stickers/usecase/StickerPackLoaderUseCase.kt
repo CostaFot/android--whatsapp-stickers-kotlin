@@ -17,7 +17,7 @@ import com.costafot.stickers.contentprovider.STICKER_PACK_PUBLISHER_IN_QUERY
 import com.costafot.stickers.contentprovider.StickerProviderHelper
 import com.costafot.stickers.contentprovider.model.Sticker
 import com.costafot.stickers.contentprovider.model.StickerPack
-import kotlinx.coroutines.CoroutineDispatcher
+import com.costafot.stickers.coroutine.DispatcherProvider
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
 import java.util.HashSet
@@ -26,7 +26,7 @@ import java.util.HashSet
  * Main class loading all sticker packs into the app.
  */
 class StickerPackLoaderUseCase(
-    private val dispatcher: CoroutineDispatcher,
+    private val dispatchers: DispatcherProvider,
     private val stickerProviderHelper: StickerProviderHelper,
     private val fetchStickerAssetUseCase: FetchStickerAssetUseCase,
     private val uriResolverUseCase: UriResolverUseCase,
@@ -34,37 +34,39 @@ class StickerPackLoaderUseCase(
     private val whiteListCheckUseCase: WhiteListCheckUseCase
 ) {
 
-    suspend fun loadStickerPacksSuspended(): ArrayList<StickerPack> {
-        return withContext(dispatcher) {
+    suspend fun loadStickerPacks(): ArrayList<StickerPack> {
+        return withContext(dispatchers.io) {
             fetchStickerPacks()
         }
     }
 
-    private fun fetchStickerPacks(): ArrayList<StickerPack> {
-        val stickerPackList: ArrayList<StickerPack> = arrayListOf()
-        try {
-            stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)?.use {
-                stickerPackList.addAll(fetchFromContentProvider(it))
+    private suspend fun fetchStickerPacks(): ArrayList<StickerPack> {
+        return withContext(dispatchers.io) {
+            val stickerPackList: ArrayList<StickerPack> = arrayListOf()
+            try {
+                stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)?.use {
+                    stickerPackList.addAll(fetchFromContentProvider(it))
+                }
+            } catch (e: Exception) {
+                throw Exception("Could not fetch from content provider $stickerProviderHelper.providerAuthority, error ${e.localizedMessage}")
             }
-        } catch (e: Exception) {
-            throw Exception("Could not fetch from content provider $stickerProviderHelper.providerAuthority, error ${e.localizedMessage}")
-        }
 
-        checkUniqueIdentifiers(stickerPackList)
+            checkUniqueIdentifiers(stickerPackList)
 
-        if (stickerPackList.isEmpty()) {
-            throw IllegalStateException("There should be at least one sticker pack in the app")
-        }
-        for (stickerPack in stickerPackList) {
-            val stickers = getStickersForPack(stickerPack)
-            stickerPack.stickers = stickers
-            stickerPackValidator.verifyStickerPackValidity(stickerPack)
-        }
+            if (stickerPackList.isEmpty()) {
+                throw IllegalStateException("There should be at least one sticker pack in the app")
+            }
+            for (stickerPack in stickerPackList) {
+                val stickers = getStickersForPack(stickerPack)
+                stickerPack.stickers = stickers
+                stickerPackValidator.verifyStickerPackValidity(stickerPack)
+            }
 
-        for (stickerPack in stickerPackList) {
-            stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier!!)
+            for (stickerPack in stickerPackList) {
+                stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier!!)
+            }
+            return@withContext stickerPackList
         }
-        return stickerPackList
     }
 
     private fun checkUniqueIdentifiers(stickerPackList: ArrayList<StickerPack>) {

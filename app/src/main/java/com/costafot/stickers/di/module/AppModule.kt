@@ -10,12 +10,13 @@ import android.content.res.Resources
 import com.costafot.stickers.BuildConfig
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.StickerProviderHelper
+import com.costafot.stickers.coroutine.DefaultDispatcherProvider
+import com.costafot.stickers.coroutine.DispatcherProvider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.squareup.otto.Bus
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -99,6 +100,9 @@ class AppModule {
         return GsonBuilder().setPrettyPrinting().create()
     }
 
+    @Singleton
     @Provides
-    internal fun providesDefaultDispatcher() = Dispatchers.Default
+    internal fun providesDispatcherProvider(): DispatcherProvider {
+        return DefaultDispatcherProvider()
+    }
 }

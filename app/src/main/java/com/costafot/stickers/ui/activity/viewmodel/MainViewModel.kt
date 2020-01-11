@@ -35,7 +35,7 @@ class MainViewModel(
     fun loadStickers() {
         viewModelScope.launch {
             try {
-                val stickerPacks: ArrayList<StickerPack> = stickerPackLoaderUseCase.loadStickerPacksSuspended()
+                val stickerPacks: ArrayList<StickerPack> = stickerPackLoaderUseCase.loadStickerPacks()
                 stickerData.value = stickerPacks
                 updateDetailsStickerPack(currentDetailsPosition)
             } catch (e: Exception) {
@@ -47,7 +47,7 @@ class MainViewModel(
     fun tryToAddStickerPack(identifier: String, packName: String) {
         viewModelScope.launch {
             try {
-                when (actionResolverUseCase.resolveActionAddStickerPackSuspended(identifier)) {
+                when (actionResolverUseCase.resolveActionAddStickerPack(identifier)) {
                     APPS_NOT_FOUND -> {
                         toastSingleLiveEvent.value = ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp)
                     }

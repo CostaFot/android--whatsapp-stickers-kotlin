@@ -3,6 +3,7 @@ package com.costafot.stickers.di.module
 import android.content.ContentResolver
 import android.content.pm.PackageManager
 import com.costafot.stickers.contentprovider.StickerProviderHelper
+import com.costafot.stickers.coroutine.DispatcherProvider
 import com.costafot.stickers.usecase.ActionResolverUseCase
 import com.costafot.stickers.usecase.ContentFileParser
 import com.costafot.stickers.usecase.FetchStickerAssetUseCase
@@ -13,7 +14,6 @@ import com.costafot.stickers.usecase.UriResolverUseCase
 import com.costafot.stickers.usecase.WhiteListCheckUseCase
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Named
 
 @Module
@@ -29,14 +29,14 @@ class UseCaseModule {
 
     @Provides
     internal fun providesStickerPackLoaderUseCase(
-        dispatcher: CoroutineDispatcher,
+        dispatchers: DispatcherProvider,
         stickerProviderHelper: StickerProviderHelper,
         fetchStickerAssetUseCase: FetchStickerAssetUseCase,
         uriResolverUseCase: UriResolverUseCase,
         stickerPackValidator: StickerPackValidator,
         whiteListCheckUseCase: WhiteListCheckUseCase
     ): StickerPackLoaderUseCase = StickerPackLoaderUseCase(
-        dispatcher,
+        dispatchers,
         stickerProviderHelper,
         fetchStickerAssetUseCase,
         uriResolverUseCase,
@@ -67,7 +67,7 @@ class UseCaseModule {
 
     @Provides
     internal fun providesActionResolverUseCase(
-        dispatcher: CoroutineDispatcher,
+        dispatchers: DispatcherProvider,
         whiteListCheckUseCase: WhiteListCheckUseCase
-    ): ActionResolverUseCase = ActionResolverUseCase(dispatcher, whiteListCheckUseCase)
+    ): ActionResolverUseCase = ActionResolverUseCase(dispatchers, whiteListCheckUseCase)
 }
