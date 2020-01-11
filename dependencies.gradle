@@ -2,7 +2,6 @@ allprojects {
     ext {
         // NEVER name this block 'android'. Never name *ANY* block android
         androidVersions = [
-                // updated 17/3/2019
                 androidXVersion  : "1.0.0",
                 livedata         : '2.0.0-rc01',
                 minSdkVersion    : 21,
@@ -10,13 +9,10 @@ allprojects {
                 compileSdkVersion: 28,
         ]
         retrofit = [
-                // updated 20/06/2019
-                retrofitVersion: '2.6.0',
-                // updated 20/06/2019
-                okhttpVersion  : '4.0.0'
+                retrofitVersion: '2.6.2',
+                okhttpVersion  : '4.2.2'
         ]
         facebookVersions = [
-                // updated 17/3/2019
                 stetho: '1.5.0'
         ]
         dependencies = [
@@ -25,7 +21,7 @@ allprojects {
                 constraintLayoutX     : 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3',
                 recyclerviewX         : 'androidx.recyclerview:recyclerview:1.0.0',
                 annotation            : 'androidx.annotation:annotation:1.1.0',
-                design                : 'com.google.android.material:material:1.1.0-alpha07',
+                material              : 'com.google.android.material:material:1.2.0-alpha02',
                 cardViewX             : 'androidx.cardview:cardview:1.0.0',
 
                 // KTX
@@ -40,6 +36,10 @@ allprojects {
                 // CoRoutines
                 coroutinesCore        : 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M2',
                 coroutinesAndroid     : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0-M2',
+
+                // Arrow
+                arrowCore             : 'io.arrow-kt:arrow-core:0.10.2',
+                arrowSyntax           : 'io.arrow-kt:arrow-syntax:0.10.2',
 
                 // *** Arch-component Lifecycle / ViewModel and related stuff
                 lifecycle             : 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02',
@@ -71,7 +71,7 @@ allprojects {
                 okHttp3               : "com.squareup.okhttp3:okhttp:$retrofit.okhttpVersion",
                 loggingInterceptor    : "com.squareup.okhttp3:logging-interceptor:$retrofit.okhttpVersion",
                 // *** JSON helpers
-                gson                  : 'com.google.code.gson:gson:2.8.5',
+                gson                  : 'com.google.code.gson:gson:2.8.6',
                 // *** RX Block
                 rxJava2               : "io.reactivex.rxjava2:rxjava:2.2.10",
                 rxAndroid             : 'io.reactivex.rxjava2:rxandroid:2.1.1',
@@ -138,9 +138,9 @@ allprojects {
                 testCoreX             : 'androidx.test:core:1.2.1-alpha01',
                 testArchCompX         : 'androidx.arch.core:core-testing:2.1.0-beta01',
                 robolectric           : 'org.robolectric:robolectric:4.3',
-                mockitoCore           : 'org.mockito:mockito-core:2.28.2',
+                mockitoCore           : 'org.mockito:mockito-core:3.0.0',
                 mockitoKotlin         : 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0',
-                mockitoInline         : 'org.mockito:mockito-inline:2.28.2',
+                mockitoInline         : 'org.mockito:mockito-inline:3.0.0',
                 runner                : 'androidx.test:runner:1.3.0-alpha01',
                 espresso              : 'androidx.test.espresso:espresso-core:3.3.0-alpha01',
                 espressoContrib       : 'androidx.test.espresso:espresso-contrib:3.1.0',
@@ -148,10 +148,10 @@ allprojects {
                 espressoIdleResources : 'androidx.test.espresso:espresso-idling-resource:3.1.0',
                 espressoIntents       : 'androidx.test.espresso:espresso-intents:3.3.0-alpha01',
                 rules                 : 'androidx.test:rules:1.3.0-alpha01',
-                truth                 : 'androidx.test.ext:truth:1.2.0-beta01',
+                truth                 : 'androidx.test.ext:truth:1.3.0-alpha01',
                 kluent                : 'org.amshove.kluent:kluent:1.51',
                 // use debugImplementation for fragment scenario!
-                fragmentScenario      : 'androidx.fragment:fragment-testing:1.1.0-beta01',
+                fragmentScenario      : 'androidx.fragment:fragment-testing:1.2.0-alpha01',
                 kakaoUiTesting        : 'com.agoda.kakao:kakao:2.0.0'
 
 

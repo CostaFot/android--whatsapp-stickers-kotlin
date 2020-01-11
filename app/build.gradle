@@ -102,7 +102,7 @@ dependencies {
 
     // Basic Google components
     implementation rootProject.ext.dependencies.appCompatX
-    implementation rootProject.ext.dependencies.design
+    implementation rootProject.ext.dependencies.material
     implementation rootProject.ext.dependencies.cardViewX
     implementation rootProject.ext.dependencies.constraintLayoutX
     implementation rootProject.ext.dependencies.recyclerviewX
