@@ -1,12 +1,12 @@
 package com.costafot.stickers.ui.fragments.host.viewmodel
 
 import androidx.lifecycle.ViewModel
-import timber.log.Timber
+import com.costafot.stickers.extensions.logDebug
 
-class HostViewModel() : ViewModel() {
+class HostViewModel : ViewModel() {
 
     override fun onCleared() {
-        Timber.tag("NavigationLogger").d("HostViewModel cleared")
+        logDebug { "HostViewModel cleared" }
         super.onCleared()
     }
 }

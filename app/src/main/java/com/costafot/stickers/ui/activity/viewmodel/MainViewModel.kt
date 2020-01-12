@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
+import com.costafot.stickers.extensions.logDebug
 import com.costafot.stickers.result.error.GenericError
 import com.costafot.stickers.result.fold
 import com.costafot.stickers.toaster.ToastMessage
@@ -19,7 +20,6 @@ import com.costafot.stickers.usecase.AddStickerPackAction.PROMPT_UPDATE_CAUSE_FA
 import com.costafot.stickers.usecase.IntentResolverUseCase
 import com.costafot.stickers.usecase.StickerPackLoaderUseCase
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MainViewModel(
     private val stickerPackLoaderUseCase: StickerPackLoaderUseCase,
@@ -89,7 +89,7 @@ class MainViewModel(
     }
 
     override fun onCleared() {
-        Timber.d("MainViewModel cleared")
+        logDebug { "MainViewModel cleared" }
         super.onCleared()
     }
 }

@@ -15,13 +15,13 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.costafot.stickers.BuildConfig
 import com.costafot.stickers.R
+import com.costafot.stickers.extensions.logDebug
 import com.costafot.stickers.extensions.toast
 import com.costafot.stickers.toaster.ToastMessage
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModelFactory
 import com.costafot.stickers.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : BaseActivity() {
@@ -89,7 +89,7 @@ class MainActivity : BaseActivity() {
                             if (BuildConfig.DEBUG) {
                                 toast(ToastMessage.Error(message = it))
                             }
-                            Timber.e("Validation failed. Error: $validationError")
+                            logDebug { "Validation failed. Error: $validationError" }
                         }
                     } else {
                         toast(ToastMessage.Error(message = "Cancelled but no validation error given."))
@@ -114,8 +114,8 @@ class MainActivity : BaseActivity() {
     private fun setupDestinationListener(navController: NavController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.hostFragment -> Timber.tag("NavigationLogger").d("hostFragment showing!")
-                R.id.anotherFragment -> Timber.tag("NavigationLogger").d("anotherFragment showing!")
+                R.id.hostFragment -> logDebug { "hostFragment showing!" }
+                R.id.anotherFragment -> logDebug { "anotherFragment showing!" }
             }
         }
     }

@@ -1,13 +1,14 @@
 package com.costafot.stickers
 
-import androidx.appcompat.app.AppCompatDelegate
 import com.costafot.stickers.di.component.AppComponent
 import com.costafot.stickers.di.component.DaggerAppComponent
-import com.costafot.stickers.toaster.initToaster
-import com.facebook.drawee.backends.pipeline.Fresco
+import com.costafot.stickers.extensions.enableVectorSupport
+import com.costafot.stickers.extensions.initFresco
+import com.costafot.stickers.extensions.initLogger
+import com.costafot.stickers.extensions.initToaster
+import com.costafot.stickers.extensions.logDebug
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
-import timber.log.Timber
 
 class StickerApplication : DaggerApplication() {
 
@@ -17,16 +18,11 @@ class StickerApplication : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-            Timber.d("Timber initialised")
-        } else {
-            Timber.e("You should not be seeing this!")
-        }
-        Timber.e("onCreate")
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        initLogger()
+        enableVectorSupport()
         initToaster()
-        Fresco.initialize(this)
+        initFresco()
+        logDebug { "Application created!" }
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
