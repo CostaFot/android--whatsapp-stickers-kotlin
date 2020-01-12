@@ -12,6 +12,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.view.ViewCompat
+import com.costafot.stickers.toaster.ToastMessage
+import com.costafot.stickers.toaster.Toaster
 import com.squareup.otto.Bus
 
 /**
@@ -107,4 +109,8 @@ fun View.registerBus(bus: Bus) {
 
 fun View.unregisterBus(bus: Bus) {
     bus.unregister(this)
+}
+
+fun View.toast(toastMessage: ToastMessage) {
+    Toaster.show(context, toastMessage)
 }

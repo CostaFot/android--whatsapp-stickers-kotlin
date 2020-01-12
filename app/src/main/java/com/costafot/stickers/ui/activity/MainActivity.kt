@@ -15,11 +15,11 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.costafot.stickers.BuildConfig
 import com.costafot.stickers.R
-import com.costafot.stickers.model.ToastMessage
+import com.costafot.stickers.extensions.toast
+import com.costafot.stickers.toaster.ToastMessage
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModelFactory
 import com.costafot.stickers.ui.base.BaseActivity
-import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -40,7 +40,7 @@ class MainActivity : BaseActivity() {
 
         setupToolbar()
 
-        mainViewModel.toastSingleLiveEvent.observe(this, Observer(this@MainActivity::showErrorToast))
+        mainViewModel.toastSingleLiveEvent.observe(this, Observer(this@MainActivity::toast))
         mainViewModel.launchIntentSingleLiveEvent.observe(this, Observer(this@MainActivity::handleLaunchIntentCommand))
     }
 
@@ -55,19 +55,12 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun showErrorToast(toastMessage: ToastMessage) {
-        when (toastMessage.hasResource()) {
-            true -> Toasty.error(this, getString(toastMessage.resourceId)).show()
-            else -> Toasty.error(this, toastMessage.message.toString()).show()
-        }
-    }
-
     // Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
     private fun launchIntentToAddPackToChooser(intent: Intent) {
         try {
             startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), REQUEST_CODE_ADD_PACK)
         } catch (e: Throwable) {
-            showErrorToast(ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
+            toast(ToastMessage.Error(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
         }
     }
 
@@ -75,7 +68,7 @@ class MainActivity : BaseActivity() {
         try {
             startActivityForResult(intent, REQUEST_CODE_ADD_PACK)
         } catch (e: Throwable) {
-            showErrorToast(ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
+            toast(ToastMessage.Info(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
         }
     }
 
@@ -94,15 +87,15 @@ class MainActivity : BaseActivity() {
                         val validationError: String? = bundle.getString(RESULT_STRING_EXTRA)
                         validationError?.let {
                             if (BuildConfig.DEBUG) {
-                                Toasty.error(this, it).show()
+                                toast(ToastMessage.Error(message = it))
                             }
                             Timber.e("Validation failed. Error: $validationError")
                         }
                     } else {
-                        showErrorToast(ToastMessage(message = "Cancelled but no validation error given."))
+                        toast(ToastMessage.Error(message = "Cancelled but no validation error given."))
                     }
                 } else {
-                    showErrorToast(ToastMessage(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
+                    toast(ToastMessage.Info(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
                 }
             }
         }

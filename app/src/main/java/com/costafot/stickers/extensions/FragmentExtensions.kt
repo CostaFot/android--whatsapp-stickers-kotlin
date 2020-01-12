@@ -1,6 +1,9 @@
 package com.costafot.stickers.extensions
 
+import android.content.Context
 import androidx.fragment.app.Fragment
+import com.costafot.stickers.toaster.ToastMessage
+import com.costafot.stickers.toaster.Toaster
 import com.squareup.otto.Bus
 
 fun Fragment.registerBus(bus: Bus) {
@@ -9,4 +12,12 @@ fun Fragment.registerBus(bus: Bus) {
 
 fun Fragment.unregisterBus(bus: Bus) {
     bus.unregister(this)
+}
+
+fun Fragment.toast(toastMessage: ToastMessage) {
+    requireContext().toast(toastMessage)
+}
+
+fun Context.toast(toastMessage: ToastMessage) {
+    Toaster.show(this, toastMessage)
 }
