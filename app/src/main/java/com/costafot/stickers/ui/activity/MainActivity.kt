@@ -17,6 +17,8 @@ import com.costafot.stickers.BuildConfig
 import com.costafot.stickers.R
 import com.costafot.stickers.extensions.logDebug
 import com.costafot.stickers.extensions.toast
+import com.costafot.stickers.toaster.Message
+import com.costafot.stickers.toaster.Resource
 import com.costafot.stickers.toaster.ToastMessage
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModel
 import com.costafot.stickers.ui.activity.viewmodel.MainViewModelFactory
@@ -60,7 +62,7 @@ class MainActivity : BaseActivity() {
         try {
             startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), REQUEST_CODE_ADD_PACK)
         } catch (e: Throwable) {
-            toast(ToastMessage.Error(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
+            toast(ToastMessage.Error(resource = Resource(R.string.add_pack_fail_prompt_update_whatsapp)))
         }
     }
 
@@ -68,7 +70,7 @@ class MainActivity : BaseActivity() {
         try {
             startActivityForResult(intent, REQUEST_CODE_ADD_PACK)
         } catch (e: Throwable) {
-            toast(ToastMessage.Info(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
+            toast(ToastMessage.Info(resource = Resource(R.string.add_pack_fail_prompt_update_whatsapp)))
         }
     }
 
@@ -87,15 +89,15 @@ class MainActivity : BaseActivity() {
                         val validationError: String? = bundle.getString(RESULT_STRING_EXTRA)
                         validationError?.let {
                             if (BuildConfig.DEBUG) {
-                                toast(ToastMessage.Error(message = it))
+                                toast(ToastMessage.Error(message = Message(it)))
                             }
                             logDebug { "Validation failed. Error: $validationError" }
                         }
                     } else {
-                        toast(ToastMessage.Error(message = "Cancelled but no validation error given."))
+                        toast(ToastMessage.Error(message = Message("Cancelled but no validation error given.")))
                     }
                 } else {
-                    toast(ToastMessage.Info(resourceId = R.string.add_pack_fail_prompt_update_whatsapp))
+                    toast(ToastMessage.Info(resource = Resource(R.string.add_pack_fail_prompt_update_whatsapp)))
                 }
             }
         }

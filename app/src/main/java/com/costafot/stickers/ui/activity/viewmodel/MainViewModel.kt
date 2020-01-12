@@ -8,6 +8,8 @@ import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.extensions.logDebug
 import com.costafot.stickers.result.error.GenericError
 import com.costafot.stickers.result.fold
+import com.costafot.stickers.toaster.Message
+import com.costafot.stickers.toaster.Resource
 import com.costafot.stickers.toaster.ToastMessage
 import com.costafot.stickers.ui.SingleLiveEvent
 import com.costafot.stickers.ui.activity.LaunchIntentCommand
@@ -43,8 +45,9 @@ class MainViewModel(
                 },
                 ifError = {
                     when (it) {
-                        is GenericError.UnknownError -> toastSingleLiveEvent.value = ToastMessage.Error(message = it.message)
-                        else -> toastSingleLiveEvent.value = ToastMessage.Error(message = "Some error happened")
+                        is GenericError.UnknownError -> toastSingleLiveEvent.value =
+                            ToastMessage.Error(message = Message(it.message))
+                        else -> toastSingleLiveEvent.value = ToastMessage.Error(message = Message("Some error happened"))
                     }
                 }
             )
@@ -57,7 +60,7 @@ class MainViewModel(
                 when (actionResolverUseCase.resolveActionAddStickerPack(identifier)) {
                     APPS_NOT_FOUND -> {
                         toastSingleLiveEvent.value =
-                            ToastMessage.Error(resourceId = R.string.add_pack_fail_prompt_update_whatsapp)
+                            ToastMessage.Error(resource = Resource(R.string.add_pack_fail_prompt_update_whatsapp))
                     }
                     ASK_USER_WHICH_APP -> {
                         val intent = intentResolverUseCase.createChooserIntentToAddStickerPack(identifier, packName)
@@ -73,12 +76,12 @@ class MainViewModel(
                     }
                     PROMPT_UPDATE_CAUSE_FAILURE -> {
                         toastSingleLiveEvent.value =
-                            ToastMessage.Error(resourceId = R.string.add_pack_fail_prompt_update_whatsapp)
+                            ToastMessage.Error(resource = Resource(R.string.add_pack_fail_prompt_update_whatsapp))
                     }
                 }
             } catch (e: Exception) {
                 toastSingleLiveEvent.value =
-                    ToastMessage.Error(resourceId = R.string.add_pack_fail_prompt_update_whatsapp)
+                    ToastMessage.Error(resource = Resource(R.string.add_pack_fail_prompt_update_whatsapp))
             }
         }
     }
