@@ -14,8 +14,13 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.costafot.stickers.contentprovider.model.Sticker
 import com.costafot.stickers.contentprovider.model.StickerPack
+import com.costafot.stickers.coroutine.DispatcherProvider
 import com.costafot.stickers.usecase.ContentFileParser
 import dagger.android.AndroidInjection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -29,34 +34,52 @@ class StickerContentProvider : ContentProvider() {
     lateinit var stickerProviderHelper: StickerProviderHelper
     @Inject
     lateinit var uriMatcher: UriMatcher
+    @Inject
+    lateinit var dispatchers: DispatcherProvider
+
+    private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     private var stickerPackList: List<StickerPack> = mutableListOf()
 
     override fun onCreate(): Boolean {
         AndroidInjection.inject(this)
 
-        // the call to get the metadata for the sticker packs.
-        uriMatcher.addURI(stickerProviderHelper.providerAuthority, METADATA, METADATA_CODE)
-
-        // the call to get the metadata for single sticker pack. * represent the identifier
-        uriMatcher.addURI(stickerProviderHelper.providerAuthority, "$METADATA/*", METADATA_CODE_FOR_SINGLE_PACK)
-
-        // gets the list of stickers for a sticker pack, * represent the identifier.
-        uriMatcher.addURI(stickerProviderHelper.providerAuthority, "$STICKERS/*", STICKERS_CODE)
-
-        for (stickerPack: StickerPack in getStickerPackList()) {
+        scope.launch(dispatchers.io) {
+            // the call to get the metadata for the sticker packs.
             uriMatcher.addURI(
                 stickerProviderHelper.providerAuthority,
-                STICKERS_ASSET + "/" + stickerPack.identifier + "/" + stickerPack.trayImageFile,
-                STICKER_PACK_TRAY_ICON_CODE
+                METADATA,
+                METADATA_CODE
             )
-            val stickersList = stickerPack.stickers ?: throw Exception("Stick list in sticker pack is null")
-            for (sticker: Sticker in stickersList) {
+
+            // the call to get the metadata for single sticker pack. * represent the identifier
+            uriMatcher.addURI(
+                stickerProviderHelper.providerAuthority,
+                "$METADATA/*",
+                METADATA_CODE_FOR_SINGLE_PACK
+            )
+
+            // gets the list of stickers for a sticker pack, * represent the identifier.
+            uriMatcher.addURI(
+                stickerProviderHelper.providerAuthority,
+                "$STICKERS/*",
+                STICKERS_CODE
+            )
+
+            for (stickerPack: StickerPack in getStickerPackList()) {
                 uriMatcher.addURI(
                     stickerProviderHelper.providerAuthority,
-                    STICKERS_ASSET + "/" + stickerPack.identifier + "/" + sticker.imageFileName,
-                    STICKERS_ASSET_CODE
+                    "$STICKERS_ASSET/${stickerPack.identifier}/${stickerPack.trayImageFile}",
+                    STICKER_PACK_TRAY_ICON_CODE
                 )
+                val stickersList = stickerPack.stickers ?: throw Exception("Stick list in sticker pack is null")
+                for (sticker: Sticker in stickersList) {
+                    uriMatcher.addURI(
+                        stickerProviderHelper.providerAuthority,
+                        "$STICKERS_ASSET/${stickerPack.identifier}/${sticker.imageFileName}",
+                        STICKERS_ASSET_CODE
+                    )
+                }
             }
         }
 
@@ -89,7 +112,10 @@ class StickerContentProvider : ContentProvider() {
         val identifier = uri.lastPathSegment
         for (stickerPack in getStickerPackList()) {
             if (identifier == stickerPack.identifier) {
-                return getStickerPackInfo(uri, listOf(stickerPack))
+                return getStickerPackInfo(
+                    uri,
+                    listOf(stickerPack)
+                )
             }
         }
 

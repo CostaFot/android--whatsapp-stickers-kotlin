@@ -18,6 +18,10 @@ import com.costafot.stickers.contentprovider.StickerProviderHelper
 import com.costafot.stickers.contentprovider.model.Sticker
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.coroutine.DispatcherProvider
+import com.costafot.stickers.result.Result
+import com.costafot.stickers.result.attempt
+import com.costafot.stickers.result.error.ErrorMapper
+import com.costafot.stickers.result.error.GenericError
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
 import java.util.HashSet
@@ -34,9 +38,11 @@ class StickerPackLoaderUseCase(
     private val whiteListCheckUseCase: WhiteListCheckUseCase
 ) {
 
-    suspend fun loadStickerPacks(): ArrayList<StickerPack> {
+    suspend fun loadStickerPacks(): Result<GenericError, ArrayList<StickerPack>> {
         return withContext(dispatchers.io) {
-            fetchStickerPacks()
+            attempt(ErrorMapper::map) {
+                fetchStickerPacks()
+            }
         }
     }
 
@@ -44,7 +50,13 @@ class StickerPackLoaderUseCase(
         return withContext(dispatchers.io) {
             val stickerPackList: ArrayList<StickerPack> = arrayListOf()
             try {
-                stickerProviderHelper.contentResolver.query(uriResolverUseCase.getAuthorityUri(), null, null, null, null)?.use {
+                stickerProviderHelper.contentResolver.query(
+                    uriResolverUseCase.getAuthorityUri(),
+                    null,
+                    null,
+                    null,
+                    null
+                )?.use {
                     stickerPackList.addAll(fetchFromContentProvider(it))
                 }
             } catch (e: Exception) {
@@ -63,7 +75,8 @@ class StickerPackLoaderUseCase(
             }
 
             for (stickerPack in stickerPackList) {
-                stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier!!)
+                requireNotNull(stickerPack.identifier)
+                stickerPack.isWhitelisted = whiteListCheckUseCase.isWhitelisted(stickerPack.identifier)
             }
             return@withContext stickerPackList
         }
@@ -75,7 +88,8 @@ class StickerPackLoaderUseCase(
             if (identifierSet.contains(stickerPack.identifier)) {
                 throw IllegalStateException("sticker pack identifiers should be unique, there are more than one pack with identifier:" + stickerPack.identifier)
             } else {
-                identifierSet.add(stickerPack.identifier!!)
+                requireNotNull(stickerPack.identifier)
+                identifierSet.add(stickerPack.identifier)
             }
         }
     }

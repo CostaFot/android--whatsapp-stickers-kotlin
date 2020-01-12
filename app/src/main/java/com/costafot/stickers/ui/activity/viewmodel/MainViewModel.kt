@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.model.ToastMessage
+import com.costafot.stickers.result.error.GenericError
+import com.costafot.stickers.result.fold
 import com.costafot.stickers.ui.SingleLiveEvent
 import com.costafot.stickers.ui.activity.LaunchIntentCommand
 import com.costafot.stickers.usecase.ActionResolverUseCase
@@ -34,13 +36,18 @@ class MainViewModel(
 
     fun loadStickers() {
         viewModelScope.launch {
-            try {
-                val stickerPacks: ArrayList<StickerPack> = stickerPackLoaderUseCase.loadStickerPacks()
-                stickerData.value = stickerPacks
-                updateDetailsStickerPack(currentDetailsPosition)
-            } catch (e: Exception) {
-                toastSingleLiveEvent.value = ToastMessage(message = e.localizedMessage)
-            }
+            stickerPackLoaderUseCase.loadStickerPacks().fold(
+                ifSuccess = { stickerPacks ->
+                    stickerData.value = stickerPacks
+                    updateDetailsStickerPack(currentDetailsPosition)
+                },
+                ifError = {
+                    when (it) {
+                        is GenericError.UnknownError -> toastSingleLiveEvent.value = ToastMessage(message = it.message)
+                        else -> toastSingleLiveEvent.value = ToastMessage(message = "Some error happened")
+                    }
+                }
+            )
         }
     }
 
