@@ -70,6 +70,10 @@ android {
         jvmTarget = "1.8"
     }
 
+    androidExtensions {
+        experimental = true
+    }
+
     testOptions {
         unitTests {
             includeAndroidResources = true
@@ -99,6 +103,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation "com.xwray:groupie:2.7.0"
+    implementation "com.xwray:groupie-kotlin-android-extensions:2.7.0"
 
     // Basic Google components
     implementation rootProject.ext.dependencies.appCompatX

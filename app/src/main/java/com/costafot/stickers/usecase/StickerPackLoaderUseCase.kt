@@ -18,6 +18,7 @@ import com.costafot.stickers.contentprovider.StickerProviderHelper
 import com.costafot.stickers.contentprovider.model.Sticker
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.coroutine.DispatcherProvider
+import com.costafot.stickers.model.TextItem
 import com.costafot.stickers.result.Result
 import com.costafot.stickers.result.attempt
 import com.costafot.stickers.result.error.ErrorMapper
@@ -38,10 +39,10 @@ class StickerPackLoaderUseCase(
     private val whiteListCheckUseCase: WhiteListCheckUseCase
 ) {
 
-    suspend fun loadStickerPacks(): Result<GenericError, ArrayList<StickerPack>> {
+    suspend fun loadStickerPacks(): Result<GenericError, ArrayList<TextItem>> {
         return withContext(dispatchers.io) {
             attempt(ErrorMapper::map) {
-                fetchStickerPacks()
+                arrayListOf(TextItem(1, "efdfdf"), TextItem(2, "dfewffwe"))
             }
         }
     }

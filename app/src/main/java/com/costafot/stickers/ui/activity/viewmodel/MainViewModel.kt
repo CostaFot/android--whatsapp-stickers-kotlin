@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.costafot.stickers.R
 import com.costafot.stickers.contentprovider.model.StickerPack
 import com.costafot.stickers.extensions.logDebug
+import com.costafot.stickers.model.TextItem
 import com.costafot.stickers.result.error.GenericError
 import com.costafot.stickers.result.fold
 import com.costafot.stickers.toaster.Message
@@ -22,6 +23,7 @@ import com.costafot.stickers.usecase.AddStickerPackAction.PROMPT_UPDATE_CAUSE_FA
 import com.costafot.stickers.usecase.IntentResolverUseCase
 import com.costafot.stickers.usecase.StickerPackLoaderUseCase
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class MainViewModel(
     private val stickerPackLoaderUseCase: StickerPackLoaderUseCase,
@@ -32,26 +34,37 @@ class MainViewModel(
     val toastSingleLiveEvent = SingleLiveEvent<ToastMessage>()
     val launchIntentSingleLiveEvent = SingleLiveEvent<LaunchIntentCommand>()
     val stickerData = MutableLiveData<ArrayList<StickerPack>>()
+    val testit = MutableLiveData<ArrayList<TextItem>>()
     val detailsStickerPackData = MutableLiveData<StickerPack>()
 
     private var currentDetailsPosition = 0
 
+    var flag = false
     fun loadStickers() {
-        viewModelScope.launch {
-            stickerPackLoaderUseCase.loadStickerPacks().fold(
-                ifSuccess = { stickerPacks ->
-                    stickerData.value = stickerPacks
-                    updateDetailsStickerPack(currentDetailsPosition)
-                },
-                ifError = {
-                    when (it) {
-                        is GenericError.UnknownError -> toastSingleLiveEvent.value =
-                            ToastMessage.Error(message = Message(it.message))
-                        else -> toastSingleLiveEvent.value = ToastMessage.Error(message = Message("Some error happened"))
+        if (!flag) {
+            flag = true
+            viewModelScope.launch {
+                stickerPackLoaderUseCase.loadStickerPacks().fold(
+                    ifSuccess = { stickerPacks ->
+                        testit.value = stickerPacks
+                        // updateDetailsStickerPack(currentDetailsPosition)
+                    },
+                    ifError = {
+                        when (it) {
+                            is GenericError.UnknownError -> toastSingleLiveEvent.value =
+                                ToastMessage.Error(message = Message(it.message))
+                            else -> toastSingleLiveEvent.value = ToastMessage.Error(message = Message("Some error happened"))
+                        }
                     }
-                }
-            )
+                )
+            }
         }
+    }
+
+    fun repeat() {
+        val ff = testit.value
+        ff?.add(TextItem(4, UUID.randomUUID().toString()))
+        testit.value = ff
     }
 
     fun tryToAddStickerPack(identifier: String, packName: String) {
