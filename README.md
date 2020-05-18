@@ -22,6 +22,8 @@ You are free to use this repo for your own project with proper attribution.
 
 If you do use it, shoot me a message so we can showcase your app here if you want :)
 
+## Find this repo useful?
+Why not give it a ⭐? It doesn't mean anything really but my mom would be proud.
 
 ## [Licence](https://github.com/CostaFot/android--whatsapp-stickers-kotlin/blob/master/LICENSE)
 
